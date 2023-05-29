@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 
-const array = Array.from({ length: 64 }, (_, index) =>
-  [27, 36].includes(index) ? 2 : ([28, 35].includes(index) ? 1 : 0)
-);
+const array = Array.from({ length: 8 }, () => Array(8).fill(0));
+array[4][4] = 2
+array[4][5] = 1
+array[5][4] = 1
+array[5][5] = 2
 
 // Structure for the sessionInfo
 const sessioninfoSchema = mongoose.Schema({
