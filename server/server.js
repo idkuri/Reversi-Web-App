@@ -32,5 +32,5 @@ app.listen(port, () => {
 }) 
 
 app.get('/', (req, res) => {
-  res.send('Hi Niome :3')
+  res.send('Teemo says hi :3')
 })
