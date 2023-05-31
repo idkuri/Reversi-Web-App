@@ -9,7 +9,7 @@
     left: 50%;
     transform: translate(-50%, -200%);
     font-size: 25px;
-    pointer-events: none;
+    /* pointer-events: none; */
 }
 
 .wrapper {

@@ -5,20 +5,25 @@ import "./styles/homepage.css";
 const Homepage = () => {
     const [columns, setColumns] = useState(0);
     const [rows, setRows] = useState(0);
-    const [toggled, setToggled] = useState(true);
+    const [toggled, setToggled] = useState(false);
 
     const tileOnClick = useCallback(index => {
-        setToggled(prevToggled => !prevToggled);
-        console.log("Tile " + index + " clicked");
+        setToggled(true);
         anime({
             targets: ".tile",
-            opacity: toggled ? 0 : 1,
+            opacity: 0,
             delay: anime.stagger(50, {
                 grid: [columns, rows],
                 from: index
             })
         });
-    }, [toggled, columns, rows]);
+
+        const tiles = document.querySelectorAll(".tile");
+        tiles.forEach(tile => {
+          tile.style.pointerEvents = "none";
+        });
+      
+    }, [columns, rows]);
 
     const createTile = useCallback(index => {
         return <div className="tile" key={index} onClick={() => {tileOnClick(index)}}/>;
@@ -45,7 +50,7 @@ const Homepage = () => {
 
     return (
         <div id="wrapper" className="wrapper">
-            {toggled ? <p className='loading_font'>Click anywhere to get started!</p> : <></>}
+            {toggled ? <></> : <p className='loading_font'>Click anywhere to get started!</p>}
             <div className="grid" style={{'--columns': columns, '--rows': rows}}>
                 {createGrid(columns * rows)}
             </div>
