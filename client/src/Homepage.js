@@ -6,7 +6,7 @@ import "./styles/homepage.css"
 const Homepage = () => {
     const [columns, setColumns] = useState(0);
     const [rows, setRows] = useState(0);
-    const [toggled, setToggled] = useState(false);
+    const [toggled, setToggled] = useState(true);
 
     const createTile = index => {
         return <div className="tile" key={index} onClick={() => {tileOnClick(index)}}/>;
