@@ -1,28 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <p>Hi Niome :3</p>
+  <h1 class="type">Click me :3</h1>
   <style>
     body {
+      background-color: #f5f5f5;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
       background-color: #f5f5f5;
       font-family: Arial, sans-serif;
     }
     
     img {
-      width: 400px;
+      position: relative;
+      width: 800px;
       height: auto;
+      outline: 5px solid black;
+      margin-left: auto;
+      margin-right: auto;
+      left: 8%;
+    }
+    
+    .type {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 24px;
+        color: #333;
+    }
+
+    audio {
+        opacity: 0;
     }
   </style>
 </head>
 <body>
   <img src="./star-rail-kuru.gif" alt="Your GIF">
-  <audio controls autoplay loop>
+  <audio id="audio" controls autoplay loop>
     <source src="./kururin.mp3" type="audio/mp3"></source>
   </audio>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const audio = document.querySelector('audio');
-      audio.play();
+      const audio = document.getElementById('audio');
+      let isPlaying = true;
+
+      const toggleAudio = () => {
+        if (isPlaying) {
+          audio.pause();
+        } else {
+          audio.play();
+        }
+        isPlaying = !isPlaying;
+      };
+
+      document.addEventListener('click', toggleAudio);
     });
   </script>
 </body>
