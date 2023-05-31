@@ -16,5 +16,14 @@
 </head>
 <body>
   <img src="./star-rail-kuru.gif" alt="Your GIF">
+  <audio controls autoplay loop>
+    <source src="./kururin.mp3" type="audio/mp3"></source>
+  </audio>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const audio = document.querySelector('audio');
+      audio.play();
+    });
+  </script>
 </body>
 </html>
