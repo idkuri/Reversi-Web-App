@@ -35,11 +35,13 @@ const Homepage = () => {
     }, [createTile]);
 
     const resizeHandler = useCallback(() => {
-        const newColumns = Math.floor(document.body.clientWidth / 125);
-        const newRows = Math.floor(document.body.clientHeight / 125);
-        setColumns(newColumns);
-        setRows(newRows);
-    }, []);
+        if (!toggled) {
+            const newColumns = Math.floor(document.body.clientWidth / 125);
+            const newRows = Math.floor(document.body.clientHeight / 125);
+            setColumns(newColumns);
+            setRows(newRows);
+        }
+    }, [toggled]);
 
     useEffect(() => {
         resizeHandler();
