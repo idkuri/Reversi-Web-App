@@ -2,6 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const sessions = require('./routes/sessions');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -31,6 +32,8 @@ app.listen(port, () => {
   console.log(`Listening to this port: ${port}`)
 }) 
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.get('/', (req, res) => {
-  res.send('Kuri says hi :3')
-})
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import anime from "animejs/lib/anime.es.js";
+import icon from "./assets/reversi_icon.svg"
 import "./styles/homepage.css";
 
 const Homepage = () => {
@@ -50,7 +51,8 @@ const Homepage = () => {
 
     return (
         <div id="wrapper" className="wrapper">
-            {toggled ? <></> : <p className='loading_font'>Click anywhere to get started!</p>}
+            {toggled ? <></> : <p className='loading_font'>Welcome to Reversi :D</p>}
+            {toggled ? <img className="logo" src={icon} alt="logo" id="on"></img> : <img className="logo" src={icon} alt="logo"></img>}
             <div className="grid" style={{'--columns': columns, '--rows': rows}}>
                 {createGrid(columns * rows)}
             </div>
