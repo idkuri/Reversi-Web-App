@@ -37,7 +37,7 @@ const Homepage = () => {
           tile.style.pointerEvents = "none";
         });
       
-    }, [columns, rows]);
+    }, [toggled, columns, rows]);
 
     const createTile = useCallback(index => {
         return <div className="tile" key={index} onClick={() => {tileOnClick(index)}}></div>;
