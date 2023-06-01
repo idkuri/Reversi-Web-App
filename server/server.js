@@ -3,12 +3,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const sessions = require('./routes/sessions');
 const path = require('path');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-// process.env.PORT is used by heroku for their own PORTS, if it doesnt exist it will use port 3000. -> localhost:3000
 const port = process.env.PORT || 3000;
 const uri = process.env.URI;
+
+//Enable CORS
+app.use(cors());
 
 // Routing
 app.use( express.json() )

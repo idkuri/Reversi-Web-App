@@ -20,6 +20,7 @@
     width: 100vw;
     height: 100vh;
     justify-content: center;
+    align-items: center;
 }
 
 @keyframes background-animation {
@@ -49,7 +50,8 @@
 }
 
 .logo {
-    position: relative;
+    position: absolute;
+    height: 100%;
     z-index: 1;
     opacity: 0;
     transition: opacity 1s ease-in;
@@ -57,16 +59,39 @@
 }
 
 .logo#on {
-    position: relative;
+    position: absolute;
+    height: 100%;
     z-index: 1;
     opacity: 0.3;
     transition: opacity 1s ease-in 0.5s;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 2px white;
+        border-radius: 10px;
+        color: white;
+    }
+    50% {
+        box-shadow: 0 0 0 2px rgb(255, 171, 171);
+        border-radius: 10px;
+        color:rgb(255, 171, 171);
+    }
+
+    100% {
+        box-shadow: 0 0 0 2px white;
+        border-radius: 10px;
+        color: white;
+    }
+    
+    
 }
 
 .tile {
     position: relative;
     /* outline: 1px solid rgb(0, 0, 0); */
     /* transition: all 0.5s ease-in-out; */
+    color: white;
 }
 
 .tile::before {
@@ -76,7 +101,24 @@
     position: absolute;
     inset: 0.5px;
     border-radius: 10px;
+    transition: all 1s ease-in-out;
 }
+
+.tile:hover::before {
+    display: flex;
+    background-color: rgb(20, 20, 20);
+    content: "Start";
+    justify-content: center;
+    position: absolute;
+    text-align: center;
+    inset: 0.5px;
+    color:rgb(255, 171, 171);
+    align-items: center;
+    border: solid black 2px;
+    font-family: Poppins;
+    
+}
+
 
 .tile:hover {
     /* outline: rgb(255, 147, 147) solid 2px; */
@@ -84,6 +126,88 @@
     cursor: pointer;
     box-shadow: 0 0 0 2px rgb(255, 171, 171);
     border-radius: 10px;
+    animation: pulse 3s linear infinite;
 }
+
+.createGame {
+    position: relative;
+    width: 50%;
+    height: 50%;
+    z-index: 2;
+    background-color: rgb(20, 20, 20);
+    border-radius: 25px;
+    color:rgb(255, 171, 171);
+    font-family: Poppins;
+    height: 10%;
+    border: none;
+}
+
+.createGame:hover {
+    position: relative;
+    width: 50%;
+    height: 50%;
+    z-index: 2;
+    background-color: rgb(20, 20, 20);
+    border-radius: 25px;
+    color:rgb(255, 171, 171);
+    font-family: Poppins;
+    height: 10%;
+    border: none;
+    box-shadow: 0 0 0 2px rgb(255, 171, 171);
+}
+
+.gameForm {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    width: calc(3 * 125px);
+    height: calc(125px);
+    z-index: 2;
+    /* background-color: rgb(20, 20, 20); */
+    border-radius: 25px;
+    color:rgb(255, 171, 171);
+    font-family: Poppins;
+    height: 50%;
+    width: 50%;
+    border: none;
+    outline: 1px red solid;
+    gap: 5%;
+}
+
+.gameForm label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+}
+
+.gameForm label input {
+    width: 100%;
+    height: 100%;
+}
+
+.mode {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    width: calc(3 * 125px);
+    height: calc(125px);
+    z-index: 2;
+    /* background-color: rgb(20, 20, 20); */
+    border-radius: 25px;
+    color:rgb(255, 171, 171);
+    font-family: Poppins;
+    height: 50%;
+    width: 50%;
+    border: none;
+    outline: 1px red solid;
+    gap: 5%;
+}
+
 
 
