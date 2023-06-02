@@ -1,0 +1,59 @@
+.wrapper {
+    display: flex;
+    background-color: rgb(255, 255, 255);
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.grid {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    background-size: 200%;
+    grid-template-columns: repeat(var(--columns), 1fr);
+    grid-template-rows: repeat(var(--rows), 1fr);
+}
+
+.tile#gamepage {
+    position: relative;
+    color: white;
+}
+
+.tile#gamepage::before {
+    background-color: rgb(20, 20, 20);
+    content: "";
+    justify-content: center;
+    position: absolute;
+    inset: 0.5px;
+    border-radius: 10px;
+    transition: all 1s ease-in-out;
+}
+
+.tile#gamepage:hover::before {
+    display: flex;
+    background-color: rgb(20, 20, 20);
+    content: "";
+    justify-content: center;
+    position: absolute;
+    text-align: center;
+    inset: 0.5px;
+    align-items: center;
+    border: none;
+    font-family: Poppins;
+    
+    
+}
+
+
+.tile#gamepage:hover {
+    z-index: 1;
+    cursor: initial;
+    border-radius: 10px;
+    animation: none;
+    box-shadow: none;
+}

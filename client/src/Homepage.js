@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState} from 'react';
+import { useNavigate } from 'react-router-dom'
 import anime from "animejs/lib/anime.es.js";
 import icon from "./assets/reversi_icon.svg"
 import "./styles/homepage.css";
@@ -8,6 +9,7 @@ const Homepage = () => {
     const [rows, setRows] = useState(0);
     const [toggled, setToggled] = useState(false);
     const [mode, setMode] = useState(null);
+    const navigate = useNavigate();
 
     function makeid(length) {
         let result = '';
@@ -64,9 +66,17 @@ const Homepage = () => {
         };
     }, [resizeHandler]);
 
-    async function createGame(event) {
-        event.preventDefault()
-        const gameId = makeid(6)
+    async function createGame() {
+        setToggled(!toggled);
+        const gameId = makeid(6);
+        anime({
+            targets: ".tile",
+            opacity: 1,
+            delay: anime.stagger(50, {
+                grid: [columns, rows],
+                from: (columns * rows) / 2
+            })
+        });
         console.log("Your game id: " + gameId);
         fetch("https://reversiapi.niome.dev/sessions", {
             method: "POST",
@@ -78,17 +88,31 @@ const Homepage = () => {
             })
         }).then((result) => {
             console.log(result);
+            if (result.status == 200) {
+                setTimeout(() => {
+                    navigate('/' + gameId);
+                  }, 500);
+            }
+            else if (result.status == 500) { // Game exists we will try with a different id
+                console.log("Game already exists navigating to the current game");
+                createGame()
+                return
+            }
+            else {
+                alert("Error of status: " + result.status)
+            }
         })
+        .catch((err) => {
+            alert(err);
+        })
+        
     }
 
     return (
-        <div id="wrapper" className="wrapper">
-            {toggled ? 
-            <img className="logo" src={icon} alt="logo" id="on"></img> 
-            : 
-            <img className="logo" src={icon} alt="logo"></img>}
+        <div id="homepage" className="wrapper">
             {toggled && (
             <>
+                <img className="logo" src={icon} alt="logo"></img> 
                 {mode == null && (
                 <div className='mode'>
                     <button type="submit" className="createGame" onClick={() => { setMode(1) }}>Find Game</button>
@@ -96,12 +120,12 @@ const Homepage = () => {
                 </div>
                 )}
                 {mode === 0 && (
-                <form className='gameForm'>
-                    <label>
-                    Player name:
-                    <input type="text" />
-                    </label>
-                    <button type="submit" className="createGame" onClick={(event) => { createGame(event) }}>Create</button>
+                    <form className='gameForm'>
+                        <label>
+                        Player name:
+                        <input type="text" />
+                        </label>
+                        <button type="submit" className="createGame" onClick={() => { createGame() }}>Create</button>
                 </form>
                 )}
                 {mode === 1 && (
@@ -113,8 +137,7 @@ const Homepage = () => {
                     <button type="submit" className="createGame">Find</button>
                 </form>
                 )}
-            </>
-            )}
+            </>)}
             
             <div className="grid" style={{'--columns': columns, '--rows': rows}}>
                 {createGrid(columns * rows)}

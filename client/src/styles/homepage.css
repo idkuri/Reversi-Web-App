@@ -34,19 +34,21 @@
 
 .grid {
     position: absolute;
-    animation: background-animation 5s linear infinite;
     width: 100%;
     height: 100%;
     display: grid;
-    background: linear-gradient(
-        to right,
-        rgb(30, 0, 255),
-        rgb(255, 0, 204),
-        rgb(30, 0, 255)
-    );
     background-size: 200%;
     grid-template-columns: repeat(var(--columns), 1fr);
     grid-template-rows: repeat(var(--rows), 1fr);
+}
+
+@keyframes logofadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 0.3;
+    }
 }
 
 .logo {
@@ -54,16 +56,8 @@
     height: 100%;
     z-index: 1;
     opacity: 0;
-    transition: opacity 1s ease-in;
     pointer-events: none;
-}
-
-.logo#on {
-    position: absolute;
-    height: 100%;
-    z-index: 1;
-    opacity: 0.3;
-    transition: opacity 1s ease-in 0.5s;
+    animation: logofadeIn 1s ease forwards 0.2s;
 }
 
 @keyframes pulse {
@@ -189,6 +183,7 @@
     height: 100%;
 }
 
+
 .mode {
     display: flex;
     flex-direction: column;
@@ -207,7 +202,21 @@
     border: none;
     outline: 1px red solid;
     gap: 5%;
+    opacity: 0;
+    animation: uifadeIn 1s ease forwards 0.2s;
 }
+
+@keyframes uifadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+}
+
+
+
 
 
 

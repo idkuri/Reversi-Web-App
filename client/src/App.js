@@ -1,14 +1,18 @@
 import { Route, Routes } from 'react-router-dom';
 import Homepage from './Homepage';
-import './App.css';
+import Gamepage from "./Gamepage"
+import Background from './components/Background';
+import './styles/App.css';
 
 function App() {
   return (
-    <div>
+    <>
+      <Background/>
       <Routes>
         <Route path ="/" element={<Homepage/>}/>
+        <Route path ="/:gameId" element={<Gamepage/>}/>
       </Routes>
-    </div>
+    </>
   );
 }
 

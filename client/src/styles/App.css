@@ -1,0 +1,14 @@
+.wallpaper {
+    position: absolute;
+    animation: background-animation 5s linear infinite;
+    animation-delay: -5s;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(
+        to right,
+        rgb(30, 0, 255),
+        rgb(255, 0, 204),
+        rgb(30, 0, 255)
+    );
+    background-size: 200%;
+}
