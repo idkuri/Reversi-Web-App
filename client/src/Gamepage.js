@@ -44,7 +44,7 @@ const Gamepage = () => {
         });
         setTimeout(() => {
             setToggled(true);
-        }, 2000)
+        }, 500)
     })
 
     return (
