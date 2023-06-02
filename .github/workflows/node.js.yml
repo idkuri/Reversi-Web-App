@@ -30,4 +30,4 @@ jobs:
           pm2 stop server
       - name: Starting server
         run:
-          pm2 start server.js
+          pm2 start server
