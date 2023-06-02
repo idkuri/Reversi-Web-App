@@ -88,12 +88,12 @@ const Homepage = () => {
             })
         }).then((result) => {
             console.log(result);
-            if (result.status == 200) {
+            if (result.status === 200) {
                 setTimeout(() => {
                     navigate('/' + gameId);
                   }, 500);
             }
-            else if (result.status == 500) { // Game exists we will try with a different id
+            else if (result.status === 500) { // Game exists we will try with a different id
                 console.log("Game already exists navigating to the current game");
                 createGame()
                 return

@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useState} from 'react';
-import { useNavigate } from 'react-router-dom'
 import anime from "animejs/lib/anime.es.js";
-import icon from "./assets/reversi_icon.svg"
 import "./styles/gamepage.css";
 
 const Gamepage = () => {
