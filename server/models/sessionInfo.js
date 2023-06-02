@@ -16,6 +16,10 @@ const sessioninfoSchema = mongoose.Schema({
         type: Array,
         default: array
     },
+    turn: {
+        type: Number,
+        default: 1
+    },
     player1 : {
         type: String,
         default: "Player 1"
@@ -24,6 +28,7 @@ const sessioninfoSchema = mongoose.Schema({
         type: String,
         default: "Player 2"
     }
+
 })
 
 
