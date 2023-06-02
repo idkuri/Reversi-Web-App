@@ -68,7 +68,7 @@ const Homepage = () => {
         event.preventDefault()
         const gameId = makeid(6)
         console.log("Your game id: " + gameId);
-        fetch("https://150.136.34.45:3000/sessions", {
+        fetch("https://reversiapi.niome.dev/sessions", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
