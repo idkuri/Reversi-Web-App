@@ -34,7 +34,7 @@ const Homepage = () => {
             })
         });
 
-        const tiles = document.querySelectorAll(".tile");
+        const tiles = document.querySelectorAll(".grid");
         tiles.forEach(tile => {
           tile.style.pointerEvents = "none";
         });

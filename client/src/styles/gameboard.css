@@ -1,0 +1,135 @@
+.row {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.board_tiles:hover {
+    background-color: green;
+    cursor: pointer;
+    
+}
+
+.board {
+    position: relative;
+    display: grid;
+    outline: black 2px solid;
+    width: 800px;
+    height: 800px;
+    z-index: 1;
+    margin: auto;
+    opacity: 0;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    animation: fadeIn 1s ease-in 0.5s forwards;
+}
+
+
+.tile_empty {
+    display: flex;
+    align-items: center;
+    outline: 2px black solid;
+    color: rgb(20,20,20);
+    width: 100px;
+    height: 100px;
+    background-color: rgb(95, 218, 95);
+    content: "";
+
+}
+
+.tile_empty:hover {
+    cursor: pointer;
+}
+
+.tile_empty.black:hover::before {
+    content: "";
+    justify-content: center;
+    inset: 0.5px;
+    border-radius: 50%;
+    transition: all 1s ease-in-out;
+    width: 80%;
+    height: 80%;
+    display: block;
+    margin: auto;
+    justify-content: center;
+    outline: 2px solid black;
+    background-color: black;
+    opacity: 0.5;
+}
+
+.tile_empty.white:hover::before {
+    content: "";
+    justify-content: center;
+    inset: 0.5px;
+    border-radius: 50%;
+    transition: all 1s ease-in-out;
+    width: 80%;
+    height: 80%;
+    display: block;
+    margin: auto;
+    justify-content: center;
+    outline: 2px solid black;
+    background-color: rgb(255, 255, 255);
+    opacity: 0.5;
+}
+
+.tile_white {
+    display: flex;
+    align-items: center;
+    outline: 2px black solid;
+    color: rgb(20,20,20);
+    width: 100px;
+    height: 100px;
+    background-color: rgb(95, 218, 95);
+}
+
+.tile_white::before {
+    background-color: rgb(255, 255, 255);
+    content: "";
+    justify-content: center;
+    inset: 0.5px;
+    border-radius: 50%;
+    transition: all 1s ease-in-out;
+    width: 80%;
+    height: 80%;
+    display: block;
+    margin: auto;
+    justify-content: center;
+    outline: 2px solid black;
+}
+
+.tile_black {
+    display: flex;
+    align-items: center;
+    outline: 2px black solid;
+    color: rgb(20,20,20);
+    width: 100px;
+    height: 100px;
+    background-color: rgb(95, 218, 95);
+}
+
+
+.tile_black::before {
+    background-color: rgb(20, 20, 20);
+    content: "";
+    justify-content: center;
+    inset: 0.5px;
+    border-radius: 50%;
+    transition: all 1s ease-in-out;
+    width: 80%;
+    height: 80%;
+    display: block;
+    margin: auto;
+    justify-content: center;
+    outline: 2px solid black;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+    
+}

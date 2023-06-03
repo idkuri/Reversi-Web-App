@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState} from 'react';
 import anime from "animejs/lib/anime.es.js";
 import "./styles/gamepage.css";
+import Gameboard from './components/Gameboard';
 
 const Gamepage = () => {
     const [columns, setColumns] = useState(0);
@@ -42,13 +43,18 @@ const Gamepage = () => {
               from: (columns * rows - 1) / 2,
             }),
         });
+        const tiles = document.querySelectorAll(".grid");
+        tiles.forEach(tile => {
+          tile.style.pointerEvents = "none";
+        });
         setTimeout(() => {
             setToggled(true);
-        }, 500)
+        }, 1000)
     })
 
     return (
         <div id="gamepage" className="wrapper">
+            <Gameboard toggled={toggled}/>
             <div className="grid" style={{'--columns': columns, '--rows': rows}}>
                 {createGrid(columns * rows)}
             </div>
