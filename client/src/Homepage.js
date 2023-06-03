@@ -78,7 +78,7 @@ const Homepage = () => {
             })
         });
         console.log("Your game id: " + gameId);
-        await fetch("https://reversiapi.niome.dev/sessions", {
+        await fetch("https://reversiapi.niome.dev/", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'

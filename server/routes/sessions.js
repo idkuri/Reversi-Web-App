@@ -66,17 +66,15 @@ router.post("/", async (req, res) => {
 // Calculates the new state of the game given the current state and the move
 function calculate(state, player, move) {
     console.log("Calculating game state")
-    const array = Array.from({ length: 8 }, () => Array(8).fill(0));
-    array[4][4] = 2
-    array[4][5] = 1
-    array[5][4] = 1
-    array[5][5] = 2
+    const array = state
+    array[move[0]][move[1]] = player
+    console.log("Player " + player + " did this move " + "row: " + move[0] + " column: " + move[1]);
     return array;
 }
 
 // Update new session
 router.patch("/:sessionId", async (req, res) => {
-    console.log("Updating session");
+    console.log("Updating session: " + req.params.sessionId);
     try {
         // Get move from body
         const move = req.body.move;
@@ -96,7 +94,7 @@ router.patch("/:sessionId", async (req, res) => {
 
         /* Checking conditions:
             1) Move is specified
-            2) Player is 0 or 1
+            2) Player is 1 or 2
             3) Player is an integer
             4) Move is an array
             5) Move is of length 2
@@ -108,9 +106,9 @@ router.patch("/:sessionId", async (req, res) => {
         if (!move) {
             throw new Error("Missing 'move' parameter in the request body")
         }
-        // Player is and a number and Player is 0 or 1 [2-3]
-        if (!Number.isInteger(player) || (player !== 0 && player !== 1)) {
-            throw new Error("Player is not an integer or not 0 or 1");
+        // Player is and a number and Player is 1 or 2 [2-3]
+        if (!Number.isInteger(player) || (player !== 1 && player !== 2)) {
+            throw new Error("Player is not an integer or not 1 or 2");
         }
         // Move is an array && Move is of length 2 && Move is between 0 and 7 [4-6]
         if (!(move instanceof Array) || move.length !== 2 || !(0 <= move[0] && move[0] <= 7) || !(0 <= move[1] && move[1] <= 7)) {
@@ -127,7 +125,10 @@ router.patch("/:sessionId", async (req, res) => {
         // Update state on database
         updateStatus = await sessionInfo.updateOne(
             {gameId: req.params.sessionId},
-            {$set: {state: state}}
+            {$set: {
+                state: state,
+                turn: player == 1 ? 2 : 1
+            }}
         )
         const new_sessionInfo = await sessionInfo.find({ gameId: req.params.sessionId});
         if (new_sessionInfo.length == 0) {
