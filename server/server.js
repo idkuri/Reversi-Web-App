@@ -8,7 +8,6 @@ const fs = require('fs');
 
 const http = require('http');
 const https = require('https');
-const port = process.env.PORT || 3000;
 
 require('dotenv').config();
 
@@ -23,15 +22,15 @@ app.use( express.json() )
 app.use("/sessions", sessions)
 
 // Certificate
-// const privateKey = fs.readFileSync(process.env.CERTPRIV, 'utf8');
-// const certificate = fs.readFileSync(process.env.CERT, 'utf8');
-// const ca = fs.readFileSync(process.env.CA, 'utf8');
+const privateKey = fs.readFileSync(process.env.CERTPRIV, 'utf8');
+const certificate = fs.readFileSync(process.env.CERT, 'utf8');
+const ca = fs.readFileSync(process.env.CA, 'utf8');
 
-// const credentials = {
-// 	key: privateKey,
-// 	cert: certificate,
-// 	ca: ca
-// };
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
 
 // Connecting to the database
 mongoose.connect(uri, {
@@ -46,22 +45,18 @@ mongoose.connect(uri, {
   process.exit(1);
 })
 
-app.listen(port, () => {
-  console.log(`Listening to this port: ${port}`)
-}) 
-
 //
-// const httpServer = http.createServer(app);
-// const httpsServer = https.createServer(credentials, app);
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
 
 // HTTP request listener
-// httpServer.listen(80, () => {
-//   console.log(`Listening to this port: 80`)
-// }) 
+httpServer.listen(80, () => {
+  console.log(`Listening to this port: 80`)
+}) 
 
-// httpsServer.listen(443, () => {
-// 	console.log('HTTPS Server running on port 443');
-// });
+httpsServer.listen(443, () => {
+	console.log('HTTPS Server running on port 443');
+});
 
 
 app.use(express.static(path.join(__dirname, 'public')));
