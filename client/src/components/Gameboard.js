@@ -14,7 +14,7 @@ const Gameboard = (props) => {
     async function getSessionInfo() {
         const location = window.location.href.split('/')
         const gameId = location[location.length - 1]
-        const url = "https://reversiapi.niome.dev/sessions/" + gameId;
+        const url = process.env.REACT_APP_API + "/" + gameId;
         await fetch(url, {
             method: "GET"
         }).then((res) => {
@@ -29,7 +29,7 @@ const Gameboard = (props) => {
         const gameId = location[location.length - 1]
         updateArray(row, column, (turn % 2) + 1);
         setTurn(turn + 1);
-        const url = "https://reversiapi.niome.dev/sessions/" + gameId;
+        const url = process.env.REACT_APP_API + "/" + gameId;
         fetch(url, {
             method: "PATCH",
             headers: {
