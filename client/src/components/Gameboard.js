@@ -29,7 +29,7 @@ const Gameboard = (props) => {
         const gameId = location[location.length - 1]
         updateArray(row, column, (turn % 2) + 1);
         setTurn(turn + 1);
-        const url = "https://reversiapi.niome.dev/sessions" + gameId;
+        const url = "https://reversiapi.niome.dev/sessions/" + gameId;
         fetch(url, {
             method: "PATCH",
             headers: {
