@@ -7,7 +7,6 @@ const Gamepage = () => {
     const [columns, setColumns] = useState(0);
     const [rows, setRows] = useState(0);
     const [toggled, setToggled] = useState(false);
-
     const createTile = useCallback(index => {
         return <div className="tile" key={index} id="gamepage"></div>;
     }, []);
@@ -32,9 +31,9 @@ const Gamepage = () => {
             window.removeEventListener('resize', resizeHandler);
         };
         
-    }, [resizeHandler]);
+    }, [resizeHandler]);    
 
-    useEffect(() => {
+    useEffect(() => {   
         anime({
             targets: ".tile",
             opacity: toggled? 0 : 1,
@@ -50,6 +49,7 @@ const Gamepage = () => {
         setTimeout(() => {
             setToggled(true);
         }, 1000)
+
     })
 
     return (

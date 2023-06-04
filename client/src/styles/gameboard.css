@@ -63,7 +63,7 @@
     justify-content: center;
     inset: 0.5px;
     border-radius: 50%;
-    transition: all 1s ease-in-out;
+    transition: all 1s ease-in-out forwards;
     width: 80%;
     height: 80%;
     display: block;
@@ -97,6 +97,8 @@
     margin: auto;
     justify-content: center;
     outline: 2px solid black;
+    opacity: 0;
+    animation: fadeIn 1s ease-in forwards;
 }
 
 .tile_black {
@@ -123,6 +125,8 @@
     margin: auto;
     justify-content: center;
     outline: 2px solid black;
+    opacity: 0;
+    animation: fadeIn 1s ease-in forwards;
 }
 
 @keyframes fadeIn {

@@ -1,17 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { io } from 'socket.io-client'
 import "../styles/gameboard.css"
 
 const Gameboard = (props) => {
     const [array, setArray] = useState([])
     const [turn, setTurn] = useState(1)
-
+    const [gameId] = useState(window.location.href.split('/')[window.location.href.split('/').length - 1]);
+    const socket = useRef(null);
 
     useEffect(() => {
         getSessionInfo()
+        socket.current = io(process.env.REACT_APP_API + ":443")
+        socket.current.emit('joinRoom', gameId);
+        console.log(socket)
+        socket.current.on("updateSession", (player, row, column) => {
+            updateArray(row, column, player);
+            setTurn(player);
+        })
+        return () => {
+            socket.current.disconnect();
+        } 
     }, []);
 
 
     async function getSessionInfo() {
+        console.log("Fetching Data")
         const location = window.location.href.split('/')
         const gameId = location[location.length - 1]
         const url = process.env.REACT_APP_API + "/" + gameId;
@@ -24,13 +37,9 @@ const Gameboard = (props) => {
         })
     }
 
-    function handleTileClick(row, column) {
-        const location = window.location.href.split('/')
-        const gameId = location[location.length - 1]
-        updateArray(row, column, (turn % 2) + 1);
-        setTurn(turn + 1);
+    async function handleTileClick(row, column) {
         const url = process.env.REACT_APP_API + "/" + gameId;
-        fetch(url, {
+        await fetch(url, {
             method: "PATCH",
             headers: {
                 'Content-Type': 'application/json'
@@ -40,6 +49,12 @@ const Gameboard = (props) => {
                 "player": (turn % 2) + 1
             })
 
+        }).then((res) => {
+            console.log(res.status)
+            if (res.status === 200) {
+                updateArray(row, column, (turn % 2) + 1);
+                socket.current.emit("move", gameId, turn, row, column)
+            }
         }).catch((err) => {
             console.log(err)
         })

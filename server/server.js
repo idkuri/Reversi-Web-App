@@ -45,9 +45,21 @@ mongoose.connect(uri, {
   process.exit(1);
 })
 
-//
+
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
+
+const { instrument } = require('@socket.io/admin-ui');
+const io = require("socket.io")(httpsServer, {
+  cors: {
+    origin: ["http://localhost:3001", "https://admin.socket.io", "https://reversiproject.netlify.app/", "*"],
+    credentials: true
+  }
+});
+
+instrument(io, {
+  auth: false
+});
 
 // HTTP request listener
 httpServer.listen(80, () => {
@@ -57,6 +69,24 @@ httpServer.listen(80, () => {
 httpsServer.listen(443, () => {
 	console.log('HTTPS Server running on port 443');
 });
+
+
+io.on('connection', socket => {
+  console.log(`user: ${socket.id} connected`)
+
+  socket.on('joinRoom', (room) => {
+    console.log(`user: ${socket.id} joining room: ${room}`)
+    socket.join(room)
+
+    socket.on('move', (room, player, row, column) => {
+      io.to(room).emit("updateSession", player == 1 ? 2 : 1, row, column)
+    })
+  })
+  socket.on('disconnect', () => {
+    console.log(`user: ${socket.id} disconnected`);
+  });
+})
+
 
 
 app.use(express.static(path.join(__dirname, 'public')));
