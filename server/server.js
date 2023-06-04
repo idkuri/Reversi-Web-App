@@ -57,7 +57,7 @@ const httpsServer = https.createServer(credentials, app);
 const { instrument } = require('@socket.io/admin-ui');
 const io = require("socket.io")(httpsServer, {
   cors: {
-    origin: ["http://localhost:3001", "https://admin.socket.io", "https://reversiproject.netlify.app/", "*"],
+    origin: ["http://localhost:3000", "http://localhost:3001", "https://admin.socket.io", "https://reversiproject.netlify.app"],
     credentials: true
   }
 });

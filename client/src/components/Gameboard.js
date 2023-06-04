@@ -10,7 +10,7 @@ const Gameboard = (props) => {
 
     useEffect(() => {
         getSessionInfo()
-        socket.current = io(process.env.REACT_APP_API + ":443")
+        socket.current = io(process.env.REACT_APP_SOCKET)
         socket.current.emit('joinRoom', gameId);
         console.log(socket)
         socket.current.on("updateSession", (player, row, column) => {
