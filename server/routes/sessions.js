@@ -2,13 +2,13 @@
 const express = require('express');
 const sessionInfo = require("../models/sessionInfo");
 const app = express();
+const apiKeyAuth = require('../utils/apiKeyAuth')
 
 // Code starts here
 const router = express.Router();
 
 // Get all sessions
-router.get("/", async (req, res) => {
-    console.log("Fetching all sessions")
+router.get("/", apiKeyAuth, async (req, res) => {
     try {
         const sessions = await sessionInfo.find();
         res.status(200).json(sessions);
@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 });
 
 // Find session by sessionID
-router.get("/:sessionId", async (req, res) => {
+router.get("/:sessionId", apiKeyAuth, async (req, res) => {
     console.log(`Fetching sessionId: ${req.params.sessionId}`);
     try {
         const sessionId = req.params.sessionId;
@@ -39,7 +39,7 @@ router.get("/:sessionId", async (req, res) => {
 
 
 // Create new session
-router.post("/", async (req, res) => {
+router.post("/", apiKeyAuth, async (req, res) => {
     console.log("Creating session");
     const sessions = await sessionInfo.find({ gameId: req.body.gameId});
     if (sessions.length == 0) {
@@ -73,7 +73,7 @@ function calculate(state, player, move) {
 }
 
 // Update new session
-router.patch("/:sessionId", async (req, res) => {
+router.patch("/:sessionId", apiKeyAuth, async (req, res) => {
     console.log("Updating session: " + req.params.sessionId);
     try {
         // Get move from body
@@ -144,7 +144,7 @@ router.patch("/:sessionId", async (req, res) => {
 })
 
 // Delete a session
-router.delete("/:sessionId", async (req, res) => {
+router.delete("/:sessionId",apiKeyAuth , async (req, res) => {
     try {
         const removeStatus = await sessionInfo.deleteOne({gameId: req.params.sessionId});
         if (removeStatus.deletedCount == 0) {
