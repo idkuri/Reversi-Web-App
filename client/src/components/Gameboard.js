@@ -34,6 +34,7 @@ const Gameboard = (props) => {
             return res.json()
         }).then((response) => {
             setArray(response[0].state)
+            setTurn(response[0].turn)
         })
     }
 
