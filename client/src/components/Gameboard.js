@@ -54,10 +54,7 @@ const Gameboard = (props) => {
             method: "PATCH",
             headers: {
                 'Content-Type': 'application/json',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'api-key': process.env.REACT_APP_CHECKAPI,
-                },
+                'api-key': process.env.REACT_APP_CHECKAPI,
             },
             body: JSON.stringify({
                 "move" : [row, column],
