@@ -16,7 +16,7 @@ const uri = process.env.URI;
 
 
 const corsOptions = {
-  origin: ['http://localhost:80', 'http://localhost:443']
+  origin: ['http://localhost:80', 'https://localhost:443', 'https://reversiproject.netlify.app']
 };
 
 //Enable CORS
