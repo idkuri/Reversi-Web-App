@@ -55,7 +55,7 @@ const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
 const { instrument } = require('@socket.io/admin-ui');
-const { env } = require('process');
+const { env, hrtime } = require('process');
 const io = require("socket.io")(httpsServer, {
   cors: {
     origin: ["http://localhost:3000", "http://localhost:3001", "https://admin.socket.io", "https://reversiproject.netlify.app"],
@@ -133,8 +133,12 @@ function calculate(state, player, move) {
 function searchHorizontal(state, player, move) {
   let start = move[1]
   let end = move[1]
+
   for (let i = move[1]-1; i >= 0 ; i--) {
     if (state[move[0]][i] == 0) {
+      break
+    }
+    if (state[move[0]][move[1]-1] == player) {
       break
     }
     if (state[move[0]][i] == player) {
@@ -142,8 +146,13 @@ function searchHorizontal(state, player, move) {
       break
     }
   }
+
+
   for (let i = move[1]+1; i < 8; i++) {
     if (state[move[0]][i] == 0) {
+      break
+    }
+    if (state[move[0]][move[1]+1] == player) {
       break
     }
     if (state[move[0]][i] == player) {
@@ -161,6 +170,9 @@ function searchVertical(state, player, move) {
     if (state[i][move[1]] == 0) {
       break
     }
+    if (state[move[0]-1][move[1]] == player) {
+      break
+    }
     if (state[i][move[1]] == player) {
       start = i
       break
@@ -168,6 +180,9 @@ function searchVertical(state, player, move) {
   }
   for (let i = move[0]+1; i < 8; i++) {
     if (state[i][move[1]] == 0) {
+      break
+    }
+    if (state[move[0]+1][move[1]] == player) {
       break
     }
     if (state[i][move[1]] == player) {
@@ -191,6 +206,9 @@ function searchDiagonal(state, player, move) {
     if (state[i][j] == 0) {
       break
     }
+    if (state[move[0]-1][move[1]-1] == player) {
+      break
+    }
     if (state[i][j] == player) {
       DRstart = [i, j]
       break
@@ -199,6 +217,9 @@ function searchDiagonal(state, player, move) {
   // [positive \] < relative to the columns
   for (let i = move[0]+1, j = move[1]+1; i < 8 && j < 8; i++, j++) {
     if (state[i][j] == 0) {
+      break
+    }
+    if (state[move[0]+1][move[1]+1] == player) {
       break
     }
     if (state[i][j] == player) {
@@ -211,6 +232,9 @@ function searchDiagonal(state, player, move) {
     if (state[i][j] == 0) {
       break
     }
+    if (state[move[0]-1][move[1]+1] == player) {
+      break
+    }
     if (state[i][j] == player) {
       TRend = [i, j]
       break
@@ -219,6 +243,9 @@ function searchDiagonal(state, player, move) {
   // // [negative /] < relative to the columns
   for (let i = move[0]+1, j = move[1]-1; i < 8 && j >= 0  ; i++, j--) {
     if (state[i][j] == 0) {
+      break
+    }
+    if (state[move[0]+1][move[1]-1] == player) {
       break
     }
     if (state[i][j] == player) {
@@ -259,6 +286,27 @@ function flipDiagonal(state, player, DR, TR) {
     array[i][j] = player
   }
   return array;
+}
+
+function checkValidity(state, player, move, array) {
+  let result = array
+    const hResult = searchHorizontal(state, player, move)
+    const vResult = searchVertical(state, player, move)
+    const dResult = searchDiagonal(state, player, move)
+    const cond1 = (hResult[0] - hResult[1]) === 0 // true means no flip
+    const cond2 = (vResult[0] - vResult[1]) === 0 // true means no flip
+    const DRstart = dResult[0][0]
+    const DRend = dResult[0][1]
+    const TRstart = dResult[1][0]
+    const TRend = dResult[1][1];
+    const DReq = (DRstart[0] === DRend[0]) && (DRstart[1] === DRend[1])
+    const TReq = (TRstart[0] === TRend[0]) && (TRstart[1] === TRend[1])
+    const cond3 = DReq && TReq // true means no flip
+    console.log(cond1 && cond2 && cond3 ? "invalid" : "valid");
+    if (cond1 && cond2 && cond3) {{
+      return false
+    }}
+  return true // return array of position that has
 }
 
 async function move(room, current, row, column) {
@@ -306,6 +354,10 @@ async function move(room, current, row, column) {
       // Incorrect player's turn [7]
       if (player != turn || typeof player === "undefined") {
           throw new Error("It is not this player's turn or player not specified")
+      }
+
+      if (!checkValidity(state, player, move, [0])) {
+          throw new Error("Invalid move")
       }
 
       // Calculate new state

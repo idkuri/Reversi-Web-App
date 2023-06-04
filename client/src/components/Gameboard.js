@@ -69,7 +69,7 @@ const Gameboard = (props) => {
                         {row.map((tile, columnIndex) => {
                             if (tile === 0) {
                                 return(
-                                    <div className={`tile_empty ${turn === 1 ? "white": "black"}`} key={columnIndex} id={columnIndex} onClick={() => {handleTileClick(rowIndex, columnIndex)}}></div>
+                                    <div className={`tile_empty ${turn === 1 ? "white": "black"}`} key={columnIndex} id={columnIndex} onClick={() => {handleTileClick(rowIndex, columnIndex)}}>{rowIndex}, {columnIndex}</div>
                                 )
                             }
                             else if (tile === 1) {
