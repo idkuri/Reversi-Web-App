@@ -20,6 +20,7 @@ const Gameboard = (props) => {
             else {
                 setTurn(1);
             }
+            getSessionInfo()
         })
         return () => {
             socket.current.disconnect();
