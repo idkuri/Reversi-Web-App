@@ -34,8 +34,13 @@ const Gameboard = (props) => {
         const gameId = location[location.length - 1]
         const url = process.env.REACT_APP_API + "/" + gameId;
         await fetch(url, {
-            method: "GET"
-        }).then((res) => {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'api-key': process.env.REACT_APP_CHECKAPI,
+            },
+        },
+        ).then((res) => {
             return res.json()
         }).then((response) => {
             setArray(response[0].state)
@@ -48,7 +53,11 @@ const Gameboard = (props) => {
         await fetch(url, {
             method: "PATCH",
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'api-key': process.env.REACT_APP_CHECKAPI,
+                },
             },
             body: JSON.stringify({
                 "move" : [row, column],

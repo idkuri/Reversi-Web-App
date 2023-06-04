@@ -81,7 +81,8 @@ const Homepage = () => {
         await fetch(process.env.REACT_APP_API, {
             method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'api-key': process.env.REACT_APP_CHECKAPI,
             },
             body: JSON.stringify({
                 "gameId" : gameId
