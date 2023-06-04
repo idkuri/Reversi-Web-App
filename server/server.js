@@ -84,7 +84,7 @@ io.on('connection', socket => {
     socket.join(room)
 
     socket.on('move', (room, player, row, column) => {
-      io.to(room).emit("updateSession", player == 1 ? 2 : 1, row, column)
+      io.to(room).emit("updateSession", player, row, column)
     })
   })
   socket.on('disconnect', () => {

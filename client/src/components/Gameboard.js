@@ -15,7 +15,12 @@ const Gameboard = (props) => {
         console.log(socket)
         socket.current.on("updateSession", (player, row, column) => {
             updateArray(row, column, player);
-            setTurn(player);
+            if (player == 1) {
+                setTurn(2);
+            }
+            else {
+                setTurn(1);
+            }
         })
         return () => {
             socket.current.disconnect();
@@ -33,7 +38,6 @@ const Gameboard = (props) => {
         }).then((res) => {
             return res.json()
         }).then((response) => {
-            console.log(response[0].turn)
             setArray(response[0].state)
             setTurn(response[0].turn)
         })
@@ -54,8 +58,8 @@ const Gameboard = (props) => {
         }).then((res) => {
             console.log(res.status)
             if (res.status === 200) {
-                updateArray(row, column, (turn % 2) + 1);
-                socket.current.emit("move", gameId, turn, row, column)
+                updateArray(row, column, turn);
+                socket.current.emit("move", gameId, turn, row, column);
             }
         }).catch((err) => {
             console.log(err)
@@ -63,6 +67,7 @@ const Gameboard = (props) => {
     }
 
     function updateArray(row, column, value) {
+        console.log(value);
         setArray(prevArray => {
             const newArray =  [...prevArray];
             newArray[row][column] = value;
@@ -80,7 +85,7 @@ const Gameboard = (props) => {
                         {row.map((tile, columnIndex) => {
                             if (tile == 0) {
                                 return(
-                                    <div className={`tile_empty ${(turn % 2) == 0 ? "white": "black"}`} key={columnIndex} id={columnIndex} onClick={() => {handleTileClick(rowIndex, columnIndex)}}></div>
+                                    <div className={`tile_empty ${turn == 1 ? "white": "black"}`} key={columnIndex} id={columnIndex} onClick={() => {handleTileClick(rowIndex, columnIndex)}}></div>
                                 )
                             }
                             else if (tile == 1) {
