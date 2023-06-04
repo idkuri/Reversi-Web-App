@@ -4,7 +4,7 @@ import "../styles/gameboard.css"
 
 const Gameboard = (props) => {
     const [array, setArray] = useState([])
-    const [turn, setTurn] = useState(1)
+    const [turn, setTurn] = useState(null)
     const [gameId] = useState(window.location.href.split('/')[window.location.href.split('/').length - 1]);
     const socket = useRef(null);
 
@@ -33,6 +33,7 @@ const Gameboard = (props) => {
         }).then((res) => {
             return res.json()
         }).then((response) => {
+            console.log(response[0].turn)
             setArray(response[0].state)
             setTurn(response[0].turn)
         })
@@ -47,7 +48,7 @@ const Gameboard = (props) => {
             },
             body: JSON.stringify({
                 "move" : [row, column],
-                "player": (turn % 2) + 1
+                "player": turn
             })
 
         }).then((res) => {
