@@ -14,8 +14,13 @@ require('dotenv').config();
 const app = express();
 const uri = process.env.URI;
 
+
+const corsOptions = {
+  origin: ['http://localhost:80', 'http://localhost:443']
+};
+
 //Enable CORS
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Routing
 app.use( express.json() )
