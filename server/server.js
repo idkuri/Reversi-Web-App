@@ -98,7 +98,7 @@ io.on('connection', socket => {
     socket.join(room)
 
     socket.on('move', async (room, player, row, column) => {
-      if(!(socket.playerNum === player)) return;
+      // if(!(socket.playerNum === player)) return;
       const status = await move(room, player, row, column);
       if (status == 200)
         io.to(room).emit("updateSession", player, row, column)
