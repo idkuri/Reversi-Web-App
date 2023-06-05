@@ -89,7 +89,7 @@ const Homepage = () => {
             body: JSON.stringify({
                 "gameId" : gameId,
                 "player2" : {
-                    name: inputValue
+                    name: inputValue === "" ? "Black" : inputValue
                 }
             })
         }).then((result) => {
