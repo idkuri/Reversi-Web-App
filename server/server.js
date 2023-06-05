@@ -145,13 +145,11 @@ async function leaveRoom(room, number) {
     const game = sessionState[0];
     if (number === 2) {
       game.player2.playerID = null
-      game.player2.name = null
       game.save()
       return 200
     }
     else if (number === 1) {
       game.player1.playerID = null
-      game.player1.name = null
       game.save()
       return 200
     }
