@@ -94,7 +94,7 @@ io.on('connection', socket => {
   socket.on('joinRoom', (room) => {
     socket.join(room)
 
-    console.log(`user: ${socket.id} assigned as player ${socket.playerNum} joining room: ${room}`)
+    console.log(`user: ${socket.id} assigned as player ${session.playerNum} joining room: ${room}`)
 
     socket.on('move', async (room, player, row, column) => {
       const status = await move(room, player, row, column);
