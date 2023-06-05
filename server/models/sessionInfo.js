@@ -31,7 +31,7 @@ const sessioninfoSchema = mongoose.Schema({
                 default: "Player 1"
             }
         },
-        default: { playerID: null, name: "Player 1" }
+        default: { playerID: null, name: "White" }
     },
     player2: {
         type: {
@@ -44,7 +44,7 @@ const sessioninfoSchema = mongoose.Schema({
                 default: "Player 2"
             }
         },
-        default: { playerID: null, name: "Player 2" }
+        default: { playerID: null, name: "Black" }
     },
 
 })

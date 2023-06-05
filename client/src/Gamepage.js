@@ -10,7 +10,7 @@ const Gamepage = (props) => {
     const createTile = useCallback(index => {
         return <div className="tile" key={index} id="gamepage"></div>;
     }, []);
-    const [currentPlayer, setCurrentPlayer] = useState("");
+    const [currentPlayer, setCurrentPlayer] = useState(null);
 
     
     const createGrid = useCallback(quantity => {
