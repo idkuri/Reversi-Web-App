@@ -50,12 +50,12 @@ const Gameboard = (props) => {
             },
         },
         ).then((res) => {
+            if (res.status === 404) {
+                throw new Error(404)
+            }
             return res.json()
         }).then((response) => {
-            if (response.length === 0) {
-                console.log("Game does not exist")
-                navigate("/")
-            }
+            console.log(response.status)
             setArray(response[0].state)
             setTurn(response[0].turn)
             console.log(response[0])
@@ -64,10 +64,17 @@ const Gameboard = (props) => {
                 props.setCurrentPlayer(response[0].player1.name + `'s turn`);
             }
             else if (response[0].turn === 2) {
-                props.setCurrentPlayer(response[0].player2.name + `'s turn`);
+                    props.setCurrentPlayer(response[0].player2.name + `'s turn`);
             }
-        }).catch((error) => {
-            console.log("error")
+        }
+        ).catch((error) => {
+            if (error.message === "404") {
+                alert("Game not found");
+                navigate("/");
+            }
+            else {
+                console.log(error)
+            }
         })
     }
 
