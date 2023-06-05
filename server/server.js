@@ -57,7 +57,7 @@ const httpsServer = https.createServer(credentials, app);
 
 const { instrument } = require('@socket.io/admin-ui');
 const { env, hrtime } = require('process');
-const io = require("socket.io")(httpServer, {
+const io = require("socket.io")(httpsServer, {
   cors: {
     origin: ["http://localhost:3000", "http://localhost:3001", "https://admin.socket.io", "https://reversiproject.netlify.app"],
     credentials: true
@@ -69,13 +69,13 @@ instrument(io, {
 });
 
 // HTTP request listener
-httpServer.listen(3000, () => {
+httpServer.listen(80, () => {
   console.log(`Listening to this port: 80`)
 }) 
 
-// httpsServer.listen(443, () => {
-// 	console.log('HTTPS Server running on port 443');
-// });
+httpsServer.listen(443, () => {
+	console.log('HTTPS Server running on port 443');
+});
 
 
 io.on('connection', socket => {
