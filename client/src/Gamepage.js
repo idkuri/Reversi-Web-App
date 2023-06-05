@@ -3,19 +3,19 @@ import anime from "animejs/lib/anime.es.js";
 import "./styles/gamepage.css";
 import Gameboard from './components/Gameboard';
 
-const Gamepage = () => {
+const Gamepage = (props) => {
     const [columns, setColumns] = useState(0);
     const [rows, setRows] = useState(0);
     const [toggled, setToggled] = useState(false);
     const createTile = useCallback(index => {
         return <div className="tile" key={index} id="gamepage"></div>;
     }, []);
+    const [currentPlayer, setCurrentPlayer] = useState("");
 
+    
     const createGrid = useCallback(quantity => {
         return Array.from(Array(quantity)).map((_, index) => createTile(index));
     }, [createTile]);
-
-    const [currentPlayer, setCurrentPlayer] = useState("");
 
     const resizeHandler = useCallback(() => {
         if (!toggled) {
@@ -57,8 +57,8 @@ const Gamepage = () => {
     return (
         <div id="gamepage" className="wrapper">
             <div className="container">
-                <div className="currentPlayer">{currentPlayer}</div>
-                <Gameboard currentPlayer={currentPlayer} setCurrentPlayer={setCurrentPlayer} toggled={toggled}/>
+            <div className="currentPlayer">{currentPlayer}</div>
+                <Gameboard toggled={toggled} setCurrentPlayer={setCurrentPlayer}/>
             </div>
             <div className="grid" style={{'--columns': columns, '--rows': rows}}>
                 {createGrid(columns * rows)}

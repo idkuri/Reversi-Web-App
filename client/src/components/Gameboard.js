@@ -1,37 +1,44 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState} from 'react';
+import { useNavigate } from 'react-router-dom'
 import { io } from 'socket.io-client'
 import "../styles/gameboard.css"
 
-const Gameboard = ({ currentPlayer, setCurrentPlayer, toggled }) => {
+const Gameboard = (props) => {
     const [array, setArray] = useState([])
-    const [turn, setTurn] = useState(null)
-    const [playerOne, setPlayerOne] = useState(null);
-    const [playerTwo, setPlayerTwo] = useState(null);
     const [gameId] = useState(window.location.href.split('/')[window.location.href.split('/').length - 1]);
-    const socket = useRef(null);
+    const [turn, setTurn] = useState(null)
+    const [socket, setSocket] = useState(null);
+    const navigate = useNavigate();
+
+
 
     useEffect(() => {
-        getSessionInfo()
-        setCurrentPlayer((turn === 1) ? `${playerOne}'s turn` : `${playerTwo}'s turn`);
-        socket.current = io(process.env.REACT_APP_SOCKET)
-        socket.current.emit('joinRoom', gameId);
-        socket.current.on("updateSession", (turn, row, column) => {
-            updateArray(row, column, turn);
-            if (turn === 1) {
-                setTurn(2);
-            }
-            else {
-                setTurn(1);
-            }
-            getSessionInfo()
-        })
-        return () => {
-            socket.current.disconnect();
-        } 
-    }, [gameId, setCurrentPlayer, playerOne, playerTwo, turn]);
+        getSessionInfo();
+        console.log(socket)
+        if (socket == null) {
+            setSocket(io(process.env.REACT_APP_SOCKET))
+        }
+        if (socket !== null) {
+            socket.emit('joinRoom', gameId);
+            socket.on("updateSession", (turn, row, column) => {
+                updateArray(row, column, turn);
+                getSessionInfo();
+            })
+            socket.on("message", (message) => {
+                console.log(message)
+            })
+            return () => {
+                if (socket && socket.connected) {
+                    console.log("Disconnected");
+                    socket.disconnect();
+                }
+            };
+        }
+    }, [gameId, socket]);
 
 
     async function getSessionInfo() {
+        console.log("Fetching game info");
         const location = window.location.href.split('/')
         const gameId = location[location.length - 1]
         const url = process.env.REACT_APP_API + "/" + gameId;
@@ -45,15 +52,27 @@ const Gameboard = ({ currentPlayer, setCurrentPlayer, toggled }) => {
         ).then((res) => {
             return res.json()
         }).then((response) => {
+            if (response.length === 0) {
+                console.log("Game does not exist")
+                navigate("/")
+            }
             setArray(response[0].state)
             setTurn(response[0].turn)
-            setPlayerOne(response[0].player1);
-            setPlayerTwo(response[0].player2);
+            console.log(response[0])
+            if (response[0].turn === 1) {
+                console.log(response[0])
+                props.setCurrentPlayer(response[0].player1.name + `'s turn`);
+            }
+            else if (response[0].turn === 2) {
+                props.setCurrentPlayer(response[0].player2.name + `'s turn`);
+            }
+        }).catch((error) => {
+            console.log("error")
         })
     }
 
     async function handleTileClick(row, column) {
-        socket.current.emit("move", gameId, turn, row, column);
+        socket.emit("move", gameId, turn, row, column);
     }
 
     function updateArray(row, column, value) {
@@ -65,7 +84,7 @@ const Gameboard = ({ currentPlayer, setCurrentPlayer, toggled }) => {
     }
 
 
-    if (toggled) {
+    if (props.toggled) {
         return (
             <div className='board'>
                 {array.map((row, rowIndex) => {

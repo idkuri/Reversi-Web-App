@@ -20,14 +20,32 @@ const sessioninfoSchema = mongoose.Schema({
         type: Number,
         default: 2
     },
-    player1 : {
-        type: String,
-        default: "Player 1"
+    player1: {
+        type: {
+            playerID: {
+                type: String,
+                default: null
+            },
+            name: {
+                type: String,
+                default: "Player 1"
+            }
+        },
+        default: { playerID: null, name: null }
     },
-    player2 : {
-        type: String,
-        default: "Player 2"
-    }
+    player2: {
+        type: {
+            playerID: {
+                type: String,
+                default: null
+            },
+            name: {
+                type: String,
+                default: "Player 2"
+            }
+        },
+        default: { playerID: null, name: null }
+    },
 
 })
 

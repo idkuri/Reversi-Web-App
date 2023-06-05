@@ -64,21 +64,4 @@ router.post("/", apiKeyAuth, async (req, res) => {
 })
 
 
-// Delete a session
-router.delete("/:sessionId", apiKeyAuth , async (req, res) => {
-    try {
-        const removeStatus = await sessionInfo.deleteOne({gameId: req.params.sessionId});
-        if (removeStatus.deletedCount == 0) {
-            res.status(404).json({error: "Game does not exist"})
-        }
-        else {
-            res.status(200).json("Game successfully removed");
-        }
-    }
-    catch (error) {
-        res.status(400).json({error: err});
-    }
-})
-
-
 module.exports = router;

@@ -88,7 +88,9 @@ const Homepage = () => {
             },
             body: JSON.stringify({
                 "gameId" : gameId,
-                "player2" : inputValue
+                "player2" : {
+                    name: inputValue
+                }
             })
         }).then((result) => {
             if (result.status === 200) {
@@ -128,13 +130,15 @@ const Homepage = () => {
                 )}
                 {mode === 0 && (
                     <form className='gameForm'>
-                        Player name:
-                        <input
-                            type="text"
-                            placeholder="Player 1"
-                            value={inputValue}
-                            onChange={handleInputChange}
-                        />
+                        <label>
+                            Player name:
+                            <input
+                                type="text"
+                                placeholder="Player 1"
+                                value={inputValue}
+                                onChange={handleInputChange}
+                            />
+                        </label>
                         <button type="submit" className="createGame" onClick={() => { createGame() }}>Create</button>
                 </form>
                 )}

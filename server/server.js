@@ -56,7 +56,7 @@ const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
 const { instrument } = require('@socket.io/admin-ui');
-const { env, hrtime } = require('process');
+
 const io = require("socket.io")(httpsServer, {
   cors: {
     origin: ["http://localhost:3000", "http://localhost:3001", "https://admin.socket.io", "https://reversiproject.netlify.app"],
@@ -77,38 +77,139 @@ httpsServer.listen(443, () => {
 	console.log('HTTPS Server running on port 443');
 });
 
+async function joinRoom(room, player) {
+  console.log(`Room ${room} Player: ${player}`)
+  let me = null
+  let sessionState = await sessionInfo.find({ gameId: room});
+  if (sessionState.length == 0) {
+      res.status(404).json({error: "Game not found"})
+      return
+  }
+  else {
+      const game = sessionState[0];
+      if (game.player2.playerID === null) {
+        game.player2.playerID = player
+        me = 2
+        await game.save();
+      }
+      else if (game.player1.playerID === null) {
+        me = 1
+        game.player1.playerID = player
+        await game.save();
+      }
+      else {
+        me = 3
+      }
+
+  }
+  return me
+}
+
+
+async function joinRoom(room, player) {
+  console.log(`Room ${room} Player: ${player}`)
+  let sessionState = await sessionInfo.find({ gameId: room});
+  if (sessionState.length == 0) {
+      res.status(404).json({error: "Game not found"})
+      return
+  }
+  else {
+      const game = sessionState[0];
+      if (game.player2.playerID === null) {
+        game.player2.playerID = player
+        await game.save();
+        return [2, game.player2]
+      }
+      else if (game.player1.playerID === null) {
+        me = 1
+        game.player1.playerID = player
+        await game.save();
+        return [1, game.player1]
+      }
+      else {
+        me = 3
+        return [3, player]
+      }
+
+  }
+}
+
+
+async function leaveRoom(room, number) {
+  let sessionState = await sessionInfo.find({ gameId: room});
+  if (sessionState.length == 0) {
+      console.log("Game not found")
+      return
+  }
+  else {
+    const game = sessionState[0];
+    if (number === 2) {
+      game.player2.playerID = null
+      game.player2.name = null
+      game.save()
+      return 200
+    }
+    else if (number === 1) {
+      game.player1.playerID = null
+      game.player1.name = null
+      game.save()
+      return 200
+    }
+  }
+}
+
+async function deleteRoom(room) {
+    try {
+        const removeStatus = await sessionInfo.deleteOne({gameId: room});
+        if (removeStatus.deletedCount == 0) {
+            throw Error("Room does not exist")
+        }
+        else {
+            return 200;
+        }
+    }
+    catch (error) {
+        console.log("Error in deleting room: " + error)
+    }
+}
 
 io.on('connection', socket => {
-  let player1 = null;
-  let player2 = null;
-
-  if(!player2){
-    player2 = socket.id;
-    socket.playerNum = 2;
-  } else if(!player1){
-    player1 = socket.id;
-    socket.playerNum = 1;
-  } else{
-    //Spectator
-    socket.playerNum = 3;
-  }
-
-  socket.on('joinRoom', (room) => {
-    console.log(`user: ${socket.id} joining room: ${room}`)
+  socket.on('joinRoom', async (room) => {
+    const me = await joinRoom(room, socket.id)
+    // console.log(`user: ${socket.id} joining room: ${room} you are player number: ${me[0]} playerInfo: ${me[1]}`)
     socket.join(room)
 
     socket.on('move', async (room, player, row, column) => {
-      // if(!(socket.playerNum === player)) return;
+      if(!(me[0] === player)) {
+        console.log(`Not ${me[0]}'s turn it is ${player}'s turn`)
+        io.to(socket.id).emit("message", "NOT YOUR TURN")
+        return;
+      } 
       const status = await move(room, player, row, column);
       if (status == 200)
         io.to(room).emit("updateSession", player, row, column)
     })
+    socket.on('disconnect', async (reason) => {
+      console.log(`user: ${socket.id} disconnected for ${reason}`);
+      await leaveRoom(room, me[0])
+      if (io.sockets.adapter.rooms.get(room) === undefined) {
+        console.log(`Delete timer started for room: ${room}`);
+        setTimeout(async () => {
+          if (io.sockets.adapter.rooms.get(room) === undefined) {
+            const status = await deleteRoom(room)
+            if (status === 200) {
+              console.log(`Room: ${room} deleted`);
+            }
+          }
+          else {
+            console.log("Room delete canceled");
+          }
+        }, 30000);
+      }
+    });
   })
-
-  socket.on('disconnect', (reason) => {
-    console.log(`user: ${socket.id} disconnected for ${reason}`);
-  });
 })
+
 
 
 
