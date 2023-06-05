@@ -11,4 +11,5 @@
         rgb(30, 0, 255)
     );
     background-size: 200%;
+    z-index: 0;
 }

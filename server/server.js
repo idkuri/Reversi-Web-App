@@ -6,6 +6,7 @@ const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
 const sessionInfo = require("./models/sessionInfo");
+const calculate = require('./utils/moveCalculations')
 
 const http = require('http');
 const https = require('https');
@@ -55,8 +56,7 @@ const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
 const { instrument } = require('@socket.io/admin-ui');
-const { env } = require('process');
-const io = require("socket.io")(httpsServer, {
+const io = require("socket.io")(httpServer, {
   cors: {
     origin: ["http://localhost:3000", "http://localhost:3001", "https://admin.socket.io", "https://reversiproject.netlify.app"],
     credentials: true
@@ -68,21 +68,33 @@ instrument(io, {
 });
 
 // HTTP request listener
-httpServer.listen(80, () => {
+httpServer.listen(3000, () => {
   console.log(`Listening to this port: 80`)
 }) 
 
-httpsServer.listen(443, () => {
-	console.log('HTTPS Server running on port 443');
-});
-
+// httpsServer.listen(3000, () => {
+// 	console.log('HTTPS Server running on port 443');
+// });
 
 io.on('connection', socket => {
-  console.log(`user: ${socket.id} connected`)
+  let player1 = null;
+  let player2 = null;
+
+  if(!player1){
+    player1 = socket.id;
+    socket.playerNum = 1;
+  } else if(!player2){
+    player2 = socket.id;
+    socket.playerNum = 2;
+  } else{
+    //Spectator
+    socket.playerNum = 3;
+  }
 
   socket.on('joinRoom', (room) => {
-    console.log(`user: ${socket.id} joining room: ${room}`)
     socket.join(room)
+
+    console.log(`user: ${socket.id} assigned as player ${socket.playerNum} joining room: ${room}`)
 
     socket.on('move', async (room, player, row, column) => {
       const status = await move(room, player, row, column);
@@ -91,8 +103,19 @@ io.on('connection', socket => {
     })
   })
 
-  socket.on('disconnect', () => {
-    console.log(`user: ${socket.id} disconnected`);
+  socket.on('disconnect', (reason) => {
+    console.log(reason);
+    let disconnected = null;
+
+    if (player1 === socket.id) {
+      disconnected = 1;
+      player1 = null;
+    } else if (player2 === socket.id) {
+      disconnected = 2;
+      player2 = null;
+    }
+
+    // socket.emit("playerDisconnectedPopUp", disconnected);
   });
 })
 
@@ -103,163 +126,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
-// Calculates the new state of the game given the current state and the move
-function calculate(state, player, move) {
-
-  // Conditions need to be met: 
-  // 1) White vicinity
-  // 2) Same piece in range 
-  let array = state
-  array[move[0]][move[1]] = player
-  // Horizontal search
-  const hResult = searchHorizontal(array, player, move)
-  console.log(`Horizontal Start: ${hResult[0]} End: ${hResult[1]}`)
-  array = flipHorizontal(array, player, move[0], hResult[0], hResult[1]);
-
-
-  // Implement Vertical
-  const vResult = searchVertical(array, player, move)
-  console.log(`Vertical Start: ${vResult[0]} End: ${vResult[1]}`)
-  array = flipVertical(array, player, move[1], vResult[0], vResult[1]);
-
-  // Implement Diagonal
-  const dResult = searchDiagonal(array, player, move)
-  array = flipDiagonal(array, player, dResult[0], dResult[1]);
-
-  return array;
-}
-
-function searchHorizontal(state, player, move) {
-  let start = move[1]
-  let end = move[1]
-  for (let i = move[1]-1; i >= 0 ; i--) {
-    if (state[move[0]][i] == 0) {
-      break
-    }
-    if (state[move[0]][i] == player) {
-      start = i
-      break
-    }
-  }
-  for (let i = move[1]+1; i < 8; i++) {
-    if (state[move[0]][i] == 0) {
-      break
-    }
-    if (state[move[0]][i] == player) {
-      end = i
-      break
-    }
-  }
-  return [start, end]
-}
-
-function searchVertical(state, player, move) {
-  let start = move[0]
-  let end = move[0]
-  for (let i = move[0]-1; i >= 0 ; i--) {
-    if (state[i][move[1]] == 0) {
-      break
-    }
-    if (state[i][move[1]] == player) {
-      start = i
-      break
-    }
-  }
-  for (let i = move[0]+1; i < 8; i++) {
-    if (state[i][move[1]] == 0) {
-      break
-    }
-    if (state[i][move[1]] == player) {
-      end = i
-      break
-    }
-  }
-  return [start, end]
-}
-
-function searchDiagonal(state, player, move) {
-  // DR short hand for down right
-  // TR short hand for top right
-  let DRstart = move
-  let DRend = move
-  let TRstart = move
-  let TRend = move
-
-  // [negative \] < relative to the columns
-  for (let i = move[0]-1, j = move[1]-1; i >= 0 && j >= 0  ; i--, j--) {
-    if (state[i][j] == 0) {
-      break
-    }
-    if (state[i][j] == player) {
-      DRstart = [i, j]
-      break
-    }
-  }
-  // [positive \] < relative to the columns
-  for (let i = move[0]+1, j = move[1]+1; i < 8 && j < 8; i++, j++) {
-    if (state[i][j] == 0) {
-      break
-    }
-    if (state[i][j] == player) {
-      DRend = [i, j]
-      break
-    }
-  }
-  // // [positive /] < relative to the columns
-  for (let i = move[0]-1, j = move[1]+1; i >= 0 && j < 8  ; i--, j++) {
-    if (state[i][j] == 0) {
-      break
-    }
-    if (state[i][j] == player) {
-      TRend = [i, j]
-      break
-    }
-  }
-  // // [negative /] < relative to the columns
-  for (let i = move[0]+1, j = move[1]-1; i < 8 && j >= 0  ; i++, j--) {
-    if (state[i][j] == 0) {
-      break
-    }
-    if (state[i][j] == player) {
-      TRstart = [i, j]
-      break
-    }
-  }
-  return [[DRstart, DRend], [TRstart, TRend]]
-}
-
-function flipHorizontal(state, player, row, start, end) {
-  let array = state
-  for (let i = start; i <= end; i++ ) {
-    array[row][i] = player
-  }
-  return array;
-}
-
-function flipVertical(state, player, column, start, end) {
-  let array = state
-  for (let i = start; i <= end; i++ ) {
-    array[i][column] = player
-  }
-  return array;
-}
-
-function flipDiagonal(state, player, DR, TR) {
-  const DRstart = DR[0]
-  const DRend = DR[1]
-  const TRstart = TR[0]
-  const TRend = TR[1]
-
-  let array = state
-  for (let i = DRstart[0], j = DRstart[1]; i <= DRend[0] && j <= DRend[1]; i++, j++) {
-    array[i][j] = player
-  }
-  for (let i = TRstart[0], j = TRstart[1]; i >= TRend[0] && j <= TRend[1]; i--, j++) {
-    array[i][j] = player
-  }
-  return array;
-}
 
 async function move(room, current, row, column) {
     try {

@@ -15,6 +15,8 @@ const Gamepage = () => {
         return Array.from(Array(quantity)).map((_, index) => createTile(index));
     }, [createTile]);
 
+    const [currentPlayer, setCurrentPlayer] = useState("");
+
     const resizeHandler = useCallback(() => {
         if (!toggled) {
             const newColumns = Math.floor(document.body.clientWidth / 125);
@@ -54,7 +56,10 @@ const Gamepage = () => {
 
     return (
         <div id="gamepage" className="wrapper">
-            <Gameboard toggled={toggled}/>
+            <div className="container">
+                <div className="currentPlayer">{currentPlayer}</div>
+                <Gameboard currentPlayer={currentPlayer} setCurrentPlayer={setCurrentPlayer} toggled={toggled}/>
+            </div>
             <div className="grid" style={{'--columns': columns, '--rows': rows}}>
                 {createGrid(columns * rows)}
             </div>

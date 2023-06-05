@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 });
 
 // Find session by sessionID
-router.get("/:sessionId", async (req, res) => {
+router.get("/:sessionId", apiKeyAuth , async (req, res) => {
     console.log(`Fetching sessionId: ${req.params.sessionId}`);
     try {
         const sessionId = req.params.sessionId;

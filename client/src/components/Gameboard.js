@@ -2,19 +2,22 @@ import React, { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client'
 import "../styles/gameboard.css"
 
-const Gameboard = (props) => {
+const Gameboard = ({ currentPlayer, setCurrentPlayer, toggled }) => {
     const [array, setArray] = useState([])
     const [turn, setTurn] = useState(null)
+    const [playerOne, setPlayerOne] = useState(null);
+    const [playerTwo, setPlayerTwo] = useState(null);
     const [gameId] = useState(window.location.href.split('/')[window.location.href.split('/').length - 1]);
     const socket = useRef(null);
 
     useEffect(() => {
         getSessionInfo()
+        setCurrentPlayer((turn === 1) ? `${playerOne}'s turn` : `${playerTwo}'s turn`);
         socket.current = io(process.env.REACT_APP_SOCKET)
         socket.current.emit('joinRoom', gameId);
-        socket.current.on("updateSession", (player, row, column) => {
-            updateArray(row, column, player);
-            if (player === 1) {
+        socket.current.on("updateSession", (turn, row, column) => {
+            updateArray(row, column, turn);
+            if (turn === 1) {
                 setTurn(2);
             }
             else {
@@ -25,7 +28,7 @@ const Gameboard = (props) => {
         return () => {
             socket.current.disconnect();
         } 
-    }, [gameId]);
+    }, [gameId, setCurrentPlayer, playerOne, playerTwo, turn]);
 
 
     async function getSessionInfo() {
@@ -44,6 +47,8 @@ const Gameboard = (props) => {
         }).then((response) => {
             setArray(response[0].state)
             setTurn(response[0].turn)
+            setPlayerOne(response[0].player1);
+            setPlayerTwo(response[0].player2);
         })
     }
 
@@ -60,7 +65,7 @@ const Gameboard = (props) => {
     }
 
 
-    if (props.toggled) {
+    if (toggled) {
         return (
             <div className='board'>
                 {array.map((row, rowIndex) => {
