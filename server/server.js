@@ -6,7 +6,7 @@ const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
 const sessionInfo = require("./models/sessionInfo");
-const calculate = require('./utils/moveCalculations')
+const { checkValidity, calculate } = require('./utils/moveCalculations.js');
 
 const http = require('http');
 const https = require('https');
@@ -56,6 +56,7 @@ const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
 const { instrument } = require('@socket.io/admin-ui');
+const { env, hrtime } = require('process');
 const io = require("socket.io")(httpServer, {
   cors: {
     origin: ["http://localhost:3000", "http://localhost:3001", "https://admin.socket.io", "https://reversiproject.netlify.app"],
@@ -72,31 +73,32 @@ httpServer.listen(3000, () => {
   console.log(`Listening to this port: 80`)
 }) 
 
-// httpsServer.listen(3000, () => {
+// httpsServer.listen(443, () => {
 // 	console.log('HTTPS Server running on port 443');
 // });
+
 
 io.on('connection', socket => {
   let player1 = null;
   let player2 = null;
 
-  if(!player1){
-    player1 = socket.id;
-    socket.playerNum = 1;
-  } else if(!player2){
+  if(!player2){
     player2 = socket.id;
     socket.playerNum = 2;
+  } else if(!player1){
+    player1 = socket.id;
+    socket.playerNum = 1;
   } else{
     //Spectator
     socket.playerNum = 3;
   }
 
   socket.on('joinRoom', (room) => {
+    console.log(`user: ${socket.id} joining room: ${room}`)
     socket.join(room)
 
-    console.log(`user: ${socket.id} assigned as player ${session.playerNum} joining room: ${room}`)
-
     socket.on('move', async (room, player, row, column) => {
+      if(!(socket.playerNum === player)) return;
       const status = await move(room, player, row, column);
       if (status == 200)
         io.to(room).emit("updateSession", player, row, column)
@@ -104,18 +106,7 @@ io.on('connection', socket => {
   })
 
   socket.on('disconnect', (reason) => {
-    console.log(reason);
-    let disconnected = null;
-
-    if (player1 === socket.id) {
-      disconnected = 1;
-      player1 = null;
-    } else if (player2 === socket.id) {
-      disconnected = 2;
-      player2 = null;
-    }
-
-    // socket.emit("playerDisconnectedPopUp", disconnected);
+    console.log(`user: ${socket.id} disconnected for ${reason}`);
   });
 })
 
@@ -172,6 +163,10 @@ async function move(room, current, row, column) {
       // Incorrect player's turn [7]
       if (player != turn || typeof player === "undefined") {
           throw new Error("It is not this player's turn or player not specified")
+      }
+
+      if (!checkValidity(state, player, move, [0])) {
+          throw new Error("Invalid move")
       }
 
       // Calculate new state

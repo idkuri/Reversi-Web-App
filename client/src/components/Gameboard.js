@@ -52,7 +52,7 @@ const Gameboard = ({ currentPlayer, setCurrentPlayer, toggled }) => {
         })
     }
 
-    function handleTileClick(row, column) {
+    async function handleTileClick(row, column) {
         socket.current.emit("move", gameId, turn, row, column);
     }
 
@@ -74,7 +74,7 @@ const Gameboard = ({ currentPlayer, setCurrentPlayer, toggled }) => {
                         {row.map((tile, columnIndex) => {
                             if (tile === 0) {
                                 return(
-                                    <div className={`tile_empty ${turn === 1 ? "white": "black"}`} key={columnIndex} id={columnIndex} onClick={() => {handleTileClick(rowIndex, columnIndex)}}>{rowIndex}, {columnIndex}</div>
+                                    <div className={`tile_empty ${turn === 1 ? "white": "black"}`} key={columnIndex} id={columnIndex} onClick={async () => {await handleTileClick(rowIndex, columnIndex)}}/>
                                 )
                             }
                             else if (tile === 1) {

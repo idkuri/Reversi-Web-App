@@ -66,6 +66,8 @@ const Homepage = () => {
         };
     }, [resizeHandler]);
 
+    const [inputValue, setInputValue] = useState('');
+
     async function createGame() {
         setToggled(!toggled);
         const gameId = makeid(6);
@@ -85,7 +87,8 @@ const Homepage = () => {
                 'api-key': process.env.REACT_APP_CHECKAPI,
             },
             body: JSON.stringify({
-                "gameId" : gameId
+                "gameId" : gameId,
+                "player2" : inputValue
             })
         }).then((result) => {
             console.log(result);
@@ -109,6 +112,10 @@ const Homepage = () => {
         
     }
 
+    const handleInputChange = (e) => {
+        setInputValue(e.target.value);
+      };
+
     return (
         <div id="homepage" className="wrapper">
             {toggled && (
@@ -122,10 +129,13 @@ const Homepage = () => {
                 )}
                 {mode === 0 && (
                     <form className='gameForm'>
-                        <label>
                         Player name:
-                        <input type="text" />
-                        </label>
+                        <input
+                            type="text"
+                            placeholder="Player 1"
+                            value={inputValue}
+                            onChange={handleInputChange}
+                        />
                         <button type="submit" className="createGame" onClick={() => { createGame() }}>Create</button>
                 </form>
                 )}
