@@ -113,6 +113,30 @@ const Homepage = () => {
         
     }
 
+    async function getGameinfo(id) {
+        const url = process.env.REACT_APP_API + "/" + id;
+        await fetch(url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'api-key': process.env.REACT_APP_CHECKAPI,
+            },
+        },
+        ).then((res) => {
+            if (res.status === 200) {
+                console.log("Game not found")
+                navigate("/" + id)
+            }
+            else {
+                alert("Game not found")
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+
+        })
+    }
+
     const handleInputChange = (e) => {
         setInputValue(e.target.value);
       };
@@ -133,8 +157,9 @@ const Homepage = () => {
                         <label>
                             Player name:
                             <input
+                                className='nameInput'
                                 type="text"
-                                placeholder="Player 1"
+                                placeholder="Enter Player Name"
                                 value={inputValue}
                                 onChange={handleInputChange}
                             />
@@ -146,9 +171,17 @@ const Homepage = () => {
                 <form className='gameForm'>
                     <label>
                     Game ID:
-                    <input type="text" />
+                    <input 
+                        className='nameInput'
+                        type="text"
+                        placeholder="Enter Game ID"
+                        value={inputValue}
+                        onChange={handleInputChange} />
                     </label>
-                    <button type="submit" className="createGame">Find</button>
+                    <button type="submit" className="createGame" onClick={async (e) => { 
+                        e.preventDefault(); 
+                        await getGameinfo(inputValue) 
+                    }}>Find</button>
                 </form>
                 )}
             </>)}
