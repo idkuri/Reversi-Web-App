@@ -11,6 +11,15 @@ const Homepage = () => {
     const [mode, setMode] = useState(null);
     const navigate = useNavigate();
 
+
+    useEffect(() => {
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape") {
+                setMode(null);
+            }
+          });
+    }, [])
+
     function makeid(length) {
         let result = '';
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
