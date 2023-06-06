@@ -197,7 +197,6 @@ const Homepage = () => {
                                     modeRef.current = null;
                                 }
                             };
-    
                             });
                             window.addEventListener("popstate", function(event) {
                                 if (modeRef.current !== null) {
