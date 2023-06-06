@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState, useRef} from 'react';
 import { useNavigate } from 'react-router-dom'
 import anime from "animejs/lib/anime.es.js";
 import icon from "./assets/reversi_icon.svg"
@@ -10,15 +10,8 @@ const Homepage = () => {
     const [toggled, setToggled] = useState(false);
     const [mode, setMode] = useState(null);
     const navigate = useNavigate();
+    const modeRef = useRef(null)
 
-
-    useEffect(() => {
-        document.addEventListener("keydown", function(event) {
-            if (event.key === "Escape") {
-                setMode(null);
-            }
-          });
-    }, [])
 
     function makeid(length) {
         let result = '';
@@ -123,27 +116,42 @@ const Homepage = () => {
     }
 
     async function getGameinfo(id) {
-        const url = process.env.REACT_APP_API + "/" + id;
-        await fetch(url, {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'api-key': process.env.REACT_APP_CHECKAPI,
+        if (id !== "") {
+            const url = process.env.REACT_APP_API + "/" + id;
+            await fetch(url, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'api-key': process.env.REACT_APP_CHECKAPI,
+                },
             },
-        },
-        ).then((res) => {
-            if (res.status === 200) {
-                console.log("Game not found")
-                navigate("/" + id)
-            }
-            else {
-                alert("Game not found")
-            }
-        })
-        .catch((error) => {
-            console.log(error)
-
-        })
+            ).then((res) => {
+                if (res.status === 200) {
+                    setToggled(!toggled);
+                    anime({
+                        targets: ".tile",
+                        opacity: 1,
+                        delay: anime.stagger(50, {
+                            grid: [columns, rows],
+                            from: (columns * rows) / 2
+                        })
+                    });
+                    setTimeout(() => {
+                        navigate('/' + id);
+                      }, 500);
+                }
+                else {
+                    alert("Game not found")
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+    
+            })
+        }
+        else {
+            alert("Empty")
+        }
     }
 
     const handleInputChange = (e) => {
@@ -157,8 +165,48 @@ const Homepage = () => {
                 <img className="logo" src={icon} alt="logo"></img> 
                 {mode == null && (
                 <div className='mode'>
-                    <button type="submit" className="createGame" onClick={() => { setMode(1) }}>Find Game</button>
-                    <button type="submit" className="createGame" onClick={() => { setMode(0) }}>Create Game</button>
+                    <button type="submit" className="createGame" onClick={(event) => { 
+                        setMode(1);
+                        modeRef.current = 1;
+                        window.addEventListener("keydown", function(event) {
+                        if (event.key === "Escape") {
+                            if (modeRef.current !== null) {
+                                window.history.back();
+                                setMode(null);
+                                modeRef.current = null;
+                            }
+                        };
+
+                        });
+                        window.addEventListener("popstate", function(event) {
+                            if (modeRef.current !== null) {
+                                setMode(null);
+                                modeRef.current = null;
+                            }
+                        })
+                        window.history.pushState(null, '', '/');  
+                        }}>Find Game</button>
+                    <button type="submit" className="createGame" onClick={(event) => { 
+                        setMode(0);
+                        modeRef.current = 1;
+                        document.addEventListener("keydown", function(event) {
+                            if (event.key === "Escape") {
+                                if (modeRef.current !== null) {
+                                    window.history.back();
+                                    setMode(null);
+                                    modeRef.current = null;
+                                }
+                            };
+    
+                            });
+                            window.addEventListener("popstate", function(event) {
+                                if (modeRef.current !== null) {
+                                    setMode(null);
+                                    modeRef.current = null;
+                                }
+                            })
+                        window.history.pushState(null, '', '/'); 
+                        }}>Create Game</button>
                 </div>
                 )}
                 {mode === 0 && (
