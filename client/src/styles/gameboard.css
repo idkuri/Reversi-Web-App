@@ -1,6 +1,8 @@
 .row {
     display: flex;
     flex-direction: column-reverse;
+    width: 100%;
+    height: 100%;
 }
 
 
@@ -12,10 +14,10 @@
 
 .board {
     position: relative;
-    display: grid;
+    display: flex;
     outline: black 2px solid;
-    width: 800px;
-    height: 800px;
+    width: 100%;
+    height: 100%;
     z-index: 1;
     margin: auto;
     background-color: white;
@@ -34,8 +36,8 @@
     align-items: center;
     outline: 3px black solid;
     color: rgb(20,20,20);
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    height: 100%;
     background-color: rgb(95, 218, 95);
     content: "";
 
@@ -82,8 +84,8 @@
     align-items: center;
     outline: 3px black solid;
     color: rgb(20,20,20);
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    height: 100%;
     background-color: rgb(95, 218, 95);
 }
 
@@ -109,8 +111,8 @@
     align-items: center;
     outline: 3px black solid;
     color: rgb(20,20,20);
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    height: 100%;
     background-color: rgb(95, 218, 95);
 }
 

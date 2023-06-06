@@ -85,3 +85,18 @@
     }
     
 }
+
+.container {
+    width: 43%;
+    height: auto;
+    aspect-ratio: 1/1;
+    position: relative;
+    min-width: 600px;
+}
+
+@media screen and (max-width: 480px) {
+    .container {
+        width: 100%;
+        min-width: 0%;
+    }
+  }
