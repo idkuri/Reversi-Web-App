@@ -1,5 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100;1,200;1,400;1,500&display=swap');
 
+/* body {
+    margin: 0px;
+}
+
+html {
+    height: 100%;
+} */
+
 .loading_font {
     position: absolute;
     color:white;
@@ -21,6 +29,8 @@
     height: 100vh;
     justify-content: center;
     align-items: center;
+    overflow-y: hidden;
+    overflow-x: hidden;
 }
 
 @keyframes background-animation {
@@ -31,15 +41,30 @@
         background-position: -200% center;
     }
 }
-
 .grid {
     position: absolute;
     width: 100%;
     height: 100%;
     display: grid;
+    background-size: 200%;
     grid-template-columns: repeat(var(--columns), 1fr);
     grid-template-rows: repeat(var(--rows), 1fr);
     z-index: 999;
+}
+
+@media screen and (max-width: 480px) {
+    .grid {
+        position: absolute;
+        width: 100%;
+        height: 125%;
+        margin-top: 20%;
+        display: grid;
+        background-size: 200%;
+        grid-template-columns: repeat(var(--columns), 1fr);
+        grid-template-rows: repeat(var(--rows), 1fr);
+        z-index: 999;
+    }
+
 }
 
 @keyframes logofadeIn {
@@ -53,6 +78,7 @@
 
 .logo {
     position: absolute;
+    width: 100%;
     height: 100%;
     z-index: 1;
     opacity: 0;
@@ -125,14 +151,14 @@
 
 .createGame {
     position: relative;
-    width: calc(15vw + 175px);
+    width: calc(15vw + 200px);
     height: 10%;
     z-index: 2;
     background-color: rgb(20, 20, 20);
     border-radius: 25px;
     color:rgb(255, 171, 171);
     font-family: Poppins;
-    font-size: 25px;
+    font-size: calc(0.2vw + 25px);
     border: none;
 }
 
@@ -233,5 +259,7 @@
       opacity: 1;
     }
 }
+
+
 
 

@@ -1,3 +1,26 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+img, picture,svg,video {
+    display: block;
+    max-width: 100%;
+}
+
+input, textarea, button, select {
+    font: inherit;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font: inherit;
+}
+
+body {
+    min-height: 100vh;
+}
+
 .wallpaper {
     position: absolute;
     animation: background-animation 5s linear infinite;
@@ -10,6 +33,14 @@
         rgb(255, 0, 204),
         rgb(30, 0, 255)
     );
-    background-size: 200%;
+    background-size: 200vw;
     z-index: 0;
+    overflow: hidden;
+}
+
+@media screen and (max-width: 480px) {
+    .wallpaper {
+        height: 110vh;
+        overflow: hidden;
+    }
 }
