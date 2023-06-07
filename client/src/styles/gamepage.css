@@ -38,8 +38,9 @@
     border-radius: 10px;
     display: inline-block;
     z-index: 1;
-    opacity: 1;
+    opacity: 0;
     color: white;
+    animation: fadeIn 1s ease-in 1.5s forwards;
 }
 
 .role {
@@ -53,8 +54,9 @@
     border-radius: 10px;
     display: inline-block;
     z-index: 1;
-    opacity: 1;
+    opacity: 0;
     text-align: center;
+    animation: fadeIn 1s ease-in 1.5s forwards;
 
 }
 
