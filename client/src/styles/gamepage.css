@@ -16,7 +16,7 @@
     background-color: #f1f1f1;
     padding: 10px;
     margin-top: 0px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     font-size: 18px;
     font-weight: bold;
     width: auto;
@@ -24,6 +24,24 @@
     display: inline-block;
     z-index: 1;
     opacity: 0;
+    animation: fadeIn 1s ease-in 1.5s forwards;
+    outline: 2px solid black;
+}
+
+.gameID {
+    position:relative;
+    background-color: #f1f1f1;
+    padding: 10px;
+    margin-top: 0px;
+    margin-bottom: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    width: auto;
+    border-radius: 10px;
+    display: inline-block;
+    z-index: 1;
+    opacity: 0;
+    outline: 2px solid black;
     animation: fadeIn 1s ease-in 1.5s forwards;
 }
 
@@ -115,6 +133,12 @@
     aspect-ratio: 1/1;
     position: relative;
     min-width: 600px;
+}
+
+.gameInfo {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
 }
 
 @media screen and (max-width: 480px) {

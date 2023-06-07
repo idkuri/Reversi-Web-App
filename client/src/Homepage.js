@@ -203,34 +203,35 @@ const Homepage = () => {
                         window.history.pushState(null, '', '/');  
                         }}>Find Game</button>
                     <button type="submit" className="createGame" onClick={(event) => { 
-                        setMode(0);
-                        modeRef.current = 1;
-                        document.addEventListener("keydown", function(event) {
-                            if (event.key === "Escape") {
-                                if (modeRef.current !== null) {
-                                    window.history.back();
-                                    setMode(null);
-                                    setInputValue('')
-                                    setfindGameAlert('nameInput')
-                                    setAlert('')
-                                    modeRef.current = null;
-                                }
-                            };
-                            });
-                            window.addEventListener("popstate", function(event) {
-                                if (modeRef.current !== null) {
-                                    setMode(null);
-                                    setInputValue('')
-                                    setfindGameAlert('nameInput')
-                                    setAlert('')
-                                    modeRef.current = null;
-                                }
-                            })
-                        window.history.pushState(null, '', '/'); 
+                        createGame();
+                        // setMode(0);
+                        // modeRef.current = 1;
+                        // document.addEventListener("keydown", function(event) {
+                        //     if (event.key === "Escape") {
+                        //         if (modeRef.current !== null) {
+                        //             window.history.back();
+                        //             setMode(null);
+                        //             setInputValue('')
+                        //             setfindGameAlert('nameInput')
+                        //             setAlert('')
+                        //             modeRef.current = null;
+                        //         }
+                        //     };
+                        //     });
+                        //     window.addEventListener("popstate", function(event) {
+                        //         if (modeRef.current !== null) {
+                        //             setMode(null);
+                        //             setInputValue('')
+                        //             setfindGameAlert('nameInput')
+                        //             setAlert('')
+                        //             modeRef.current = null;
+                        //         }
+                        //     })
+                        // window.history.pushState(null, '', '/'); 
                         }}>Create Game</button>
                 </div>
                 )}
-                {mode === 0 && (
+                {/* {mode === 0 &&
                     <form className='gameForm'>
                         <label>
                             Player name:
@@ -244,7 +245,7 @@ const Homepage = () => {
                         </label>
                         <button type="submit" className="createGame" onClick={() => { createGame() }}>Create</button>
                 </form>
-                )}
+                )} */}
                 {mode === 1 && (
                 <form className='gameForm'>
                     <label>
