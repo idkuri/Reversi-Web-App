@@ -46,11 +46,25 @@ mongoose.connect(uri, {
 })
 .then(() => {
   console.log("Successfully connected to MongoDB")
+  deleteAllRooms();
 })
 .catch(() => {
   console.error("MongoDB Connection failed ", error);
   process.exit(1);
 })
+
+async function deleteAllRooms() {
+  try {
+    const status = await mongoose.connection.db.dropCollection('sessions')
+    if (status === true) {
+      console.log("All rooms deleted");
+    }
+  }
+  catch (error) {
+      console.log("Error in deleting all rooms: " + error)
+      process.exit(1);
+  }
+}
 
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
