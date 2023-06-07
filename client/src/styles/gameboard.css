@@ -79,6 +79,21 @@
     opacity: 0.5;
 }
 
+.tile_empty.suggest::before {
+    content: "";
+    justify-content: center;
+    inset: 0.5px;
+    border-radius: 50%;
+    transition: all 1s ease-in-out forwards;
+    width: 80%;
+    height: 80%;
+    display: block;
+    margin: auto;
+    justify-content: center;
+    outline: 3px solid black;
+    opacity: 0.3;
+}
+
 .tile_white {
     display: flex;
     align-items: center;

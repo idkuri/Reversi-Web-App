@@ -182,13 +182,27 @@ function flipDiagonal(state, player, DR, TR) {
   return array;
 }
 
-function checkValidity(state, player, move, array) {
-  let result = array
+
+function getValidMoves(state, player) {
+  const validMoves = [];
+  
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      if ((state[row][col] != 1 && state[row][col] != 2) && checkValidity(state, player, [row, col])) {
+        validMoves.push([row, col]);
+      }
+    }
+  }
+  
+  return validMoves;
+}
+
+function checkValidity(state, player, move) {
     const hResult = searchHorizontal(state, player, move)
     const vResult = searchVertical(state, player, move)
     const dResult = searchDiagonal(state, player, move)
-    const cond1 = (hResult[0] - hResult[1]) === 0 // true means no flip
-    const cond2 = (vResult[0] - vResult[1]) === 0 // true means no flip
+    const cond1 = (hResult[0] === hResult[1])// true means no flip
+    const cond2 = (vResult[0] === vResult[1]) // true means no flip
     const DRstart = dResult[0][0]
     const DRend = dResult[0][1]
     const TRstart = dResult[1][0]
@@ -196,7 +210,7 @@ function checkValidity(state, player, move, array) {
     const DReq = (DRstart[0] === DRend[0]) && (DRstart[1] === DRend[1])
     const TReq = (TRstart[0] === TRend[0]) && (TRstart[1] === TRend[1])
     const cond3 = DReq && TReq // true means no flip
-    console.log(cond1 && cond2 && cond3 ? "invalid" : "valid");
+    console.log(hResult);
     if (cond1 && cond2 && cond3) {{
       return false
     }}
@@ -204,6 +218,7 @@ function checkValidity(state, player, move, array) {
 }
 
 module.exports = {
+  getValidMoves,
   checkValidity,
   calculate
 };

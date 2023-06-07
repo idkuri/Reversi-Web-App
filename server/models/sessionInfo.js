@@ -5,6 +5,10 @@ array[3][3] = 1
 array[3][4] = 2
 array[4][3] = 2
 array[4][4] = 1
+array[2][3] = -1
+array[3][2] = -1
+array[5][4] = -1
+array[4][5] = -1 
 
 // Structure for the sessionInfo
 const sessioninfoSchema = mongoose.Schema({

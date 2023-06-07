@@ -6,7 +6,7 @@ const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
 const sessionInfo = require("./models/sessionInfo");
-const { checkValidity, calculate } = require('./utils/moveCalculations.js');
+const { checkValidity, calculate, getValidMoves } = require('./utils/moveCalculations.js');
 
 const http = require('http');
 const https = require('https');
@@ -79,35 +79,6 @@ httpsServer.listen(443, () => {
 
 async function joinRoom(room, player) {
   console.log(`Room ${room} Player: ${player}`)
-  let me = null
-  let sessionState = await sessionInfo.find({ gameId: room});
-  if (sessionState.length == 0) {
-      res.status(404).json({error: "Game not found"})
-      return
-  }
-  else {
-      const game = sessionState[0];
-      if (game.player2.playerID === null) {
-        game.player2.playerID = player
-        me = 2
-        await game.save();
-      }
-      else if (game.player1.playerID === null) {
-        me = 1
-        game.player1.playerID = player
-        await game.save();
-      }
-      else {
-        me = 3
-      }
-
-  }
-  return me
-}
-
-
-async function joinRoom(room, player) {
-  console.log(`Room ${room} Player: ${player}`)
   let sessionState = await sessionInfo.find({ gameId: room});
   if (sessionState.length == 0) {
       res.status(404).json({error: "Game not found"})
@@ -174,8 +145,8 @@ async function deleteRoom(room) {
 io.on('connection', socket => {
   socket.on('joinRoom', async (room) => {
     const me = await joinRoom(room, socket.id)
-    // console.log(`user: ${socket.id} joining room: ${room} you are player number: ${me[0]} playerInfo: ${me[1]}`)
     socket.join(room)
+    io.to(socket.id).emit("playerInfo", me[0]);
 
     socket.on('move', async (room, player, row, column) => {
       if(!(me[0] === player)) {
@@ -184,7 +155,7 @@ io.on('connection', socket => {
         return;
       } 
       const status = await move(room, player, row, column);
-      if (status == 200)
+      if (status.status == 200)
         io.to(room).emit("updateSession", player, row, column)
     })
     socket.on('disconnect', async (reason) => {
@@ -236,6 +207,16 @@ async function move(room, current, row, column) {
           turn = sessionState[0].turn
       }
 
+      // Perform suggestions clean up
+      for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+          if (state[i][j] == -1) {
+            state[i][j] = 0;
+          }
+        }
+      }
+
+
       /* Checking conditions:
           1) Move is specified
           2) Player is 1 or 2
@@ -264,26 +245,43 @@ async function move(room, current, row, column) {
           throw new Error("It is not this player's turn or player not specified")
       }
 
-      if (!checkValidity(state, player, move, [0])) {
+      if (!checkValidity(state, player, move)) {
           throw new Error("Invalid move")
       }
 
       // Calculate new state
+      let nextPlayer = player == 1 ? 2 : 1
       state = calculate(state, player, move);
+
+      let suggestions = getValidMoves(state, nextPlayer)
+      if (suggestions.length == 0) {
+        suggestions = getValidMoves(state, player)
+        nextPlayer = player
+      }
+      if (suggestions.length == 0) {
+        nextPlayer = -1
+      }
+
+      for (let i = 0; i < suggestions.length; i++) {
+        console.log(suggestions)
+        state[suggestions[i][0]][suggestions[i][1]] = -1;
+      }
 
       // Update state on database
       updateStatus = await sessionInfo.updateOne(
           {gameId: room},
           {$set: {
               state: state,
-              turn: player == 1 ? 2 : 1
+              turn: nextPlayer
           }}
       )
-      return 200
+      return {
+        status: 200, 
+      }
     } 
     catch (error) {
         console.log("Error " + error)
-        return 400
+        return {status: 400}
     }
 }
 

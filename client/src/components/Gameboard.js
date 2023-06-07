@@ -8,6 +8,7 @@ const Gameboard = (props) => {
     const [gameId] = useState(window.location.href.split('/')[window.location.href.split('/').length - 1]);
     const [turn, setTurn] = useState(null)
     const [socket, setSocket] = useState(null);
+    const [playerNum, setPlayerNum] = useState(null);
     const navigate = useNavigate();
 
 
@@ -27,6 +28,18 @@ const Gameboard = (props) => {
             socket.on("message", (message) => {
                 console.log(message)
             })
+            socket.on("playerInfo", (playerNum) => {
+                setPlayerNum(playerNum)
+                if (playerNum === 2) {
+                    alert("You are Black");
+                }
+                else if (playerNum === 1) {
+                    alert("You are White");
+                }
+                else if (playerNum === 3) {
+                    alert("You are Spectator");
+                }
+            })
             return () => {
                 if (socket && socket.connected) {
                     console.log("Disconnected");
@@ -35,7 +48,6 @@ const Gameboard = (props) => {
             };
         }
     }, [gameId, socket]);
-
 
     async function getSessionInfo() {
         console.log("Fetching game info");
@@ -55,12 +67,15 @@ const Gameboard = (props) => {
             }
             return res.json()
         }).then((response) => {
-            console.log(response.status)
             setArray(response[0].state)
-            setTurn(response[0].turn)
-            console.log(response[0])
+            if (response[0].turn === -1) {
+                alert(`Game over! Black count: ${document.querySelectorAll(".tile_black").length} White count: ${document.querySelectorAll(".tile_white").length}`)
+                return
+            }
+            else {
+                setTurn(response[0].turn)
+            }
             if (response[0].turn === 1) {
-                console.log(response[0])
                 props.setCurrentPlayer(response[0].player1.name + `'s turn`);
             }
             else if (response[0].turn === 2) {
@@ -79,7 +94,9 @@ const Gameboard = (props) => {
     }
 
     async function handleTileClick(row, column) {
-        socket.emit("move", gameId, turn, row, column);
+        if (turn === playerNum) {
+            socket.emit("move", gameId, turn, row, column);
+        }
     }
 
     function updateArray(row, column, value) {
@@ -114,7 +131,12 @@ const Gameboard = (props) => {
                                 )
                             }
                             else {
-                                return <></>
+                                if (turn === playerNum) {
+                                    return <div className={`tile_empty suggest ${turn === 1 ? "white": "black"}`} key={columnIndex} onClick={async () => {await handleTileClick(rowIndex, columnIndex)}}></div>
+                                }
+                                else {
+                                    return <div className={`tile_empty ${turn === 1 ? "white": "black"}`} key={columnIndex} id={columnIndex} onClick={async () => {await handleTileClick(rowIndex, columnIndex)}}/>
+                                }
                             }
                         })}
                     </div>
