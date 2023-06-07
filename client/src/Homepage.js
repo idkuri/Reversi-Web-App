@@ -12,6 +12,8 @@ const Homepage = () => {
     const navigate = useNavigate();
     const modeRef = useRef(null);
     const [inputValue, setInputValue] = useState('');
+    const [findGameAlert, setfindGameAlert] = useState('nameInput')
+    const [alertMsg, setAlert] = useState("");
 
 
     function makeid(length) {
@@ -141,7 +143,11 @@ const Homepage = () => {
                       }, 500);
                 }
                 else {
-                    alert("Game not found")
+                    setfindGameAlert('nameInput notFound')
+                    setAlert("Not found")
+                    setTimeout(() => {
+                        setfindGameAlert('nameInput notFoundv2')
+                    }, 500)
                 }
             })
             .catch((error) => {
@@ -150,7 +156,11 @@ const Homepage = () => {
             })
         }
         else {
-            alert("Empty")
+            setfindGameAlert('nameInput notFound')
+            setAlert("Not found")
+            setTimeout(() => {
+                setfindGameAlert('nameInput notFoundv2')
+            }, 500)
         }
     }
 
@@ -174,6 +184,8 @@ const Homepage = () => {
                                 window.history.back();
                                 setMode(null);
                                 setInputValue('')
+                                setfindGameAlert('nameInput')
+                                setAlert('')
                                 modeRef.current = null;
                             }
                         };
@@ -183,6 +195,8 @@ const Homepage = () => {
                             if (modeRef.current !== null) {
                                 setMode(null);
                                 setInputValue('')
+                                setfindGameAlert('nameInput')
+                                setAlert('')
                                 modeRef.current = null;
                             }
                         })
@@ -197,6 +211,8 @@ const Homepage = () => {
                                     window.history.back();
                                     setMode(null);
                                     setInputValue('')
+                                    setfindGameAlert('nameInput')
+                                    setAlert('')
                                     modeRef.current = null;
                                 }
                             };
@@ -205,6 +221,8 @@ const Homepage = () => {
                                 if (modeRef.current !== null) {
                                     setMode(null);
                                     setInputValue('')
+                                    setfindGameAlert('nameInput')
+                                    setAlert('')
                                     modeRef.current = null;
                                 }
                             })
@@ -231,12 +249,13 @@ const Homepage = () => {
                 <form className='gameForm'>
                     <label>
                     Game ID:
-                    <input 
-                        className='nameInput'
-                        type="text"
-                        placeholder="Enter Game ID"
-                        value={inputValue}
-                        onChange={handleInputChange} />
+                        <input 
+                            className={`${findGameAlert}`}
+                            type="text"
+                            placeholder="Enter Game ID"
+                            value={inputValue}
+                            onChange={handleInputChange} />
+                            <p className='notify'>{alertMsg}</p>
                     </label>
                     <button type="submit" className="createGame" onClick={async (e) => { 
                         e.preventDefault(); 
