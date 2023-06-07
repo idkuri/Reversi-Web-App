@@ -31,13 +31,13 @@ const Gameboard = (props) => {
             socket.on("playerInfo", (playerNum) => {
                 setPlayerNum(playerNum)
                 if (playerNum === 2) {
-                    alert("You are Black");
+                    props.setRole("Black")
                 }
                 else if (playerNum === 1) {
-                    alert("You are White");
+                    props.setRole("White")
                 }
                 else if (playerNum === 3) {
-                    alert("You are Spectator");
+                    props.setRole("Spectating")
                 }
             })
             return () => {

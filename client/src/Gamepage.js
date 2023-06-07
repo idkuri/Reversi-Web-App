@@ -11,6 +11,7 @@ const Gamepage = (props) => {
         return <div className="tile" key={index} id="gamepage"></div>;
     }, []);
     const [currentPlayer, setCurrentPlayer] = useState(null);
+    const [role, setRole] = useState(null);
 
     
     const createGrid = useCallback(quantity => {
@@ -58,7 +59,8 @@ const Gamepage = (props) => {
         <div id="gamepage" className="wrapper">
             <div className="container">
             <div className="currentPlayer">{currentPlayer}</div>
-                <Gameboard toggled={toggled} setCurrentPlayer={setCurrentPlayer}/>
+                <Gameboard toggled={toggled} setCurrentPlayer={setCurrentPlayer} setRole={setRole}/>
+                <div className={`role ${role}`}>{`You are ${role}`}</div>
             </div>
             <div className="grid" style={{'--columns': columns, '--rows': rows}}>
                 {createGrid(columns * rows)}
