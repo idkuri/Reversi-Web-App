@@ -56,7 +56,7 @@ mongoose.connect(uri, {
 async function deleteAllRooms() {
   try {
     const status = await mongoose.connection.db.dropCollection('sessions')
-    if (status === true) {
+    if (status) { // Status === true
       console.log("All rooms deleted");
     }
   }
@@ -187,7 +187,7 @@ io.on('connection', socket => {
           else {
             console.log("Room delete canceled");
           }
-        }, 30000);
+        }, 60000);
       }
     });
   })
