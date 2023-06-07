@@ -8,13 +8,13 @@ function calculate(state, player, move) {
   array[move[0]][move[1]] = player
   // Horizontal search
   const hResult = searchHorizontal(array, player, move)
-  console.log(`Horizontal Start: ${hResult[0]} End: ${hResult[1]}`)
+  // console.log(`Horizontal Start: ${hResult[0]} End: ${hResult[1]}`)
   array = flipHorizontal(array, player, move[0], hResult[0], hResult[1]);
 
 
   // Implement Vertical
   const vResult = searchVertical(array, player, move)
-  console.log(`Vertical Start: ${vResult[0]} End: ${vResult[1]}`)
+  // console.log(`Vertical Start: ${vResult[0]} End: ${vResult[1]}`)
   array = flipVertical(array, player, move[1], vResult[0], vResult[1]);
 
   // Implement Diagonal
@@ -210,7 +210,6 @@ function checkValidity(state, player, move) {
     const DReq = (DRstart[0] === DRend[0]) && (DRstart[1] === DRend[1])
     const TReq = (TRstart[0] === TRend[0]) && (TRstart[1] === TRend[1])
     const cond3 = DReq && TReq // true means no flip
-    console.log(hResult);
     if (cond1 && cond2 && cond3) {{
       return false
     }}

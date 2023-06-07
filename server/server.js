@@ -263,7 +263,6 @@ async function move(room, current, row, column) {
       }
 
       for (let i = 0; i < suggestions.length; i++) {
-        console.log(suggestions)
         state[suggestions[i][0]][suggestions[i][1]] = -1;
       }
 

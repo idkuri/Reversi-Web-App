@@ -10,7 +10,8 @@ const Homepage = () => {
     const [toggled, setToggled] = useState(false);
     const [mode, setMode] = useState(null);
     const navigate = useNavigate();
-    const modeRef = useRef(null)
+    const modeRef = useRef(null);
+    const [inputValue, setInputValue] = useState('');
 
 
     function makeid(length) {
@@ -68,7 +69,6 @@ const Homepage = () => {
         };
     }, [resizeHandler]);
 
-    const [inputValue, setInputValue] = useState('');
 
     async function createGame() {
         setToggled(!toggled);
@@ -173,6 +173,7 @@ const Homepage = () => {
                             if (modeRef.current !== null) {
                                 window.history.back();
                                 setMode(null);
+                                setInputValue('')
                                 modeRef.current = null;
                             }
                         };
@@ -181,6 +182,7 @@ const Homepage = () => {
                         window.addEventListener("popstate", function(event) {
                             if (modeRef.current !== null) {
                                 setMode(null);
+                                setInputValue('')
                                 modeRef.current = null;
                             }
                         })
@@ -194,6 +196,7 @@ const Homepage = () => {
                                 if (modeRef.current !== null) {
                                     window.history.back();
                                     setMode(null);
+                                    setInputValue('')
                                     modeRef.current = null;
                                 }
                             };
@@ -201,6 +204,7 @@ const Homepage = () => {
                             window.addEventListener("popstate", function(event) {
                                 if (modeRef.current !== null) {
                                     setMode(null);
+                                    setInputValue('')
                                     modeRef.current = null;
                                 }
                             })
