@@ -12,6 +12,23 @@ const Gameboard = (props) => {
     const navigate = useNavigate();
 
 
+    useEffect(() => {
+        setTimeout(() => {
+            if (turn === -1) {
+                const numBlack = document.querySelectorAll(".tile_black").length;
+                const numWhite = document.querySelectorAll(".tile_white").length;
+                if (numBlack > numWhite) {
+                    props.setCurrentPlayer(`Black wins! Black Count: ${numBlack} White Count: ${numWhite}`);
+                }
+                else if (numBlack < numWhite) {
+                    props.setCurrentPlayer(`White wins! Black Count: ${numBlack} White Count: ${numWhite}`);
+                }
+                else {
+                    props.setCurrentPlayer(`Draw! Black Count: ${numBlack} White Count: ${numWhite}`);
+                }
+            }
+        }, 1500)
+    }, [turn, props])
 
     useEffect(() => {
         getSessionInfo();
@@ -68,18 +85,12 @@ const Gameboard = (props) => {
             return res.json()
         }).then((response) => {
             setArray(response[0].state)
-            if (response[0].turn === -1) {
-                alert(`Game over! Black count: ${document.querySelectorAll(".tile_black").length} White count: ${document.querySelectorAll(".tile_white").length}`)
-                return
-            }
-            else {
-                setTurn(response[0].turn)
-            }
+            setTurn(response[0].turn)
             if (response[0].turn === 1) {
                 props.setCurrentPlayer(response[0].player1.name + `'s turn`);
             }
             else if (response[0].turn === 2) {
-                    props.setCurrentPlayer(response[0].player2.name + `'s turn`);
+                props.setCurrentPlayer(response[0].player2.name + `'s turn`);
             }
         }
         ).catch((error) => {
