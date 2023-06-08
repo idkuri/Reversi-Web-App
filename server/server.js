@@ -7,15 +7,18 @@ const cors = require('cors');
 const fs = require('fs');
 const sessionInfo = require("./models/sessionInfo");
 const { checkValidity, calculate, getValidMoves } = require('./utils/moveCalculations.js');
+const { Mutex } = require('async-mutex');
 
 const http = require('http');
 const https = require('https');
 
 require('dotenv').config();
 
+// Mutex locks for socket concurrency
+const mutex = new Mutex(); 
+
 const app = express();
 const uri = process.env.URI;
-
 
 const corsOptions = {
   origin: ['http://localhost:80', 'https://localhost:443', 'http://localhost:3000', 'http://localhost:3001', 'https://reversiproject.netlify.app']
@@ -92,35 +95,78 @@ httpsServer.listen(443, () => {
 });
 
 async function joinRoom(room, player) {
-  console.log(`Room ${room} Player: ${player}`)
-  let sessionState = await sessionInfo.find({ gameId: room});
-  if (sessionState.length == 0) {
-      res.status(404).json({error: "Game not found"})
-      return
+  // Mutex lock to ensure one thread runs this function at a time
+  const release = await mutex.acquire();
+  try {
+    console.log(`Room ${room} Player: ${player} joined`)
+    let sessionState = await sessionInfo.find({ gameId: room});
+    if (sessionState.length == 0) {
+        res.status(404).json({error: "Game not found"})
+        return
+    }
+    else {
+        const game = sessionState[0];
+        if (game.player2.playerID === null) {
+          game.player2.playerID = player
+          await game.save();
+          return [2, game.player2]
+        }
+        else if (game.player1.playerID === null) {
+          me = 1
+          game.player1.playerID = player
+          await game.save();
+          return [1, game.player1]
+        }
+        else {
+          me = 3
+          return [3, player]
+        }
+  
+    }
+  } finally {
+    // Release lock upon completion
+    release();
+  }
+} 
+
+
+function makeid(length) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
+}
+
+async function createRoom(room) {
+  console.log("Creating session: " + room);
+  const sessions = await sessionInfo.find({ gameId: room});
+  if (sessions.length == 0) {
+      const session = new sessionInfo({
+          gameId : room
+      })
+  
+      try {
+          await session.save();
+          console.log("room created")
+          return 200;
+      }
+      catch (err) {
+          return 400;
+      }
   }
   else {
-      const game = sessionState[0];
-      if (game.player2.playerID === null) {
-        game.player2.playerID = player
-        await game.save();
-        return [2, game.player2]
-      }
-      else if (game.player1.playerID === null) {
-        me = 1
-        game.player1.playerID = player
-        await game.save();
-        return [1, game.player1]
-      }
-      else {
-        me = 3
-        return [3, player]
-      }
-
+      return 401;
   }
 }
 
 
-async function leaveRoom(room, number) {
+async function leaveRoom(room, number, player) {
+  console.log(`Room ${room} Player: ${player} left`)
   let sessionState = await sessionInfo.find({ gameId: room});
   if (sessionState.length == 0) {
       console.log("Game not found")
@@ -157,11 +203,46 @@ async function deleteRoom(room) {
 }
 
 io.on('connection', socket => {
+  console.log(`${socket.id} connected!`)
+
+  // console.log(io.allSockets());
+  socket.on('joinQueue', async () => {
+    let queueInfo = await io.sockets.in('queue').allSockets();
+    let queue = Array.from(queueInfo);
+    if (queue.length === 0) {
+      console.log(`${socket.id} is added to the queue`);
+      await socket.join('queue')
+
+    }
+    else {
+      const gameId = makeid(6);
+      const match = Array.from(queue)
+      io.to(match[0]).emit('leaveQueue')
+      const status = await createRoom(gameId);
+      if (status === 200) {
+        io.to(match[0]).emit('transfer', gameId)
+        io.to(socket.id).emit('transfer', gameId)
+
+      }
+
+    }
+  })
+
+  socket.on('leaveQueue', () => {
+    console.log(`${socket.id} Leaving Queue`)
+    socket.leave('queue');
+  })
+  
+  // Listen for join rooms
   socket.on('joinRoom', async (room) => {
     const me = await joinRoom(room, socket.id)
-    socket.join(room)
+
+    await socket.join(room);
     io.to(socket.id).emit("playerInfo", me[0]);
 
+    
+
+    // Listen for moves
     socket.on('move', async (room, player, row, column) => {
       if(!(me[0] === player)) {
         console.log(`Not ${me[0]}'s turn it is ${player}'s turn`)
@@ -172,9 +253,31 @@ io.on('connection', socket => {
       if (status.status == 200)
         io.to(room).emit("updateSession", player, row, column)
     })
-    socket.on('disconnect', async (reason) => {
-      console.log(`user: ${socket.id} disconnected for ${reason}`);
-      await leaveRoom(room, me[0])
+
+    // Listen for room leaves
+    socket.on('leaveRoom', async () => {
+      await leaveRoom(room, me[0], socket.id)
+      await socket.leave(room);
+      if (io.sockets.adapter.rooms.get(room) === undefined) {
+        console.log(`Delete timer started for room: ${room}`);
+        setTimeout(async () => {
+          if (io.sockets.adapter.rooms.get(room) === undefined) {
+            const status = await deleteRoom(room)
+            if (status === 200) {
+              console.log(`Room: ${room} deleted`);
+            }
+          }
+          else {
+            console.log("Room delete canceled");
+          }
+        }, 60000);
+      }
+    });
+
+    // Listen for disconnects
+    socket.on('disconnect', async () => {
+      await leaveRoom(room, me[0], socket.id)
+      await socket.leave(room);
       if (io.sockets.adapter.rooms.get(room) === undefined) {
         console.log(`Delete timer started for room: ${room}`);
         setTimeout(async () => {

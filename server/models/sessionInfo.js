@@ -32,7 +32,7 @@ const sessioninfoSchema = mongoose.Schema({
             },
             name: {
                 type: String,
-                default: "Player 1"
+                default: "White"
             }
         },
         default: { playerID: null, name: "White" }
@@ -45,7 +45,7 @@ const sessioninfoSchema = mongoose.Schema({
             },
             name: {
                 type: String,
-                default: "Player 2"
+                default: "Black"
             }
         },
         default: { playerID: null, name: "Black" }

@@ -62,7 +62,7 @@ const Gamepage = (props) => {
                 <div className="currentPlayer">{currentPlayer}</div>
                 <div className="gameID">{`Game ID: ${window.location.href.split('/')[window.location.href.split('/').length - 1]}`}</div>
             </div>
-                <Gameboard toggled={toggled} setCurrentPlayer={setCurrentPlayer} setRole={setRole}/>
+                <Gameboard socket={props.socket} toggled={toggled} setCurrentPlayer={setCurrentPlayer} setRole={setRole}/>
                 <div className={`role ${role}`}>{`You are ${role}`}</div>
             </div>
             <div className="grid" style={{'--columns': columns, '--rows': rows}}>

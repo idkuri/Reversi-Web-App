@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100;1,200;1,400;1,500&display=swap');
+
+.MMwrapper {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(255, 255, 255);
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+.loading {
+    position: absolute;
+    display: flex;
+    background-color: rgb(20,20,20);
+    width: calc(3*125px);
+    height: calc(1*125px);
+    /* margin: auto; */
+    align-items: center;
+    justify-content: center;
+    border-radius: 25px;
+    z-index: 9;
+    font-family: Poppins;
+    color: white;
+    font-size: 25px;
+    text-align: center;
+}
+
+.loading:hover {
+    background-color: rgb(57, 57, 57);
+    cursor: pointer;
+    content: "Cancel";
+    align-items: center;
+    align-content: center;
+    position: relative;
+}
+
+.loading:hover::before {
+    position: absolute;
+    content: "Cancel X";
+    inset: 0.5px;
+    transition: all 1s ease-in-out forwards;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 25px;
+    outline: 2px solid black;
+    background-color: rgb(114, 35, 22);
+    opacity: 1;
+}
+
+/* .cancelMM {
+    width: calc(1.5*125px);
+    height: calc(0.5*125px);
+    background-color: rgb(157, 157, 157);
+    box-shadow: none;
+    outline: none;
+    border: none;
+    z-index: 9;
+} */

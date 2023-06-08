@@ -1,13 +1,11 @@
 import React, { useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom'
-import { io } from 'socket.io-client'
 import "../styles/gameboard.css"
 
 const Gameboard = (props) => {
     const [array, setArray] = useState([])
     const [gameId] = useState(window.location.href.split('/')[window.location.href.split('/').length - 1]);
     const [turn, setTurn] = useState(null)
-    const [socket, setSocket] = useState(null);
     const [playerNum, setPlayerNum] = useState(null);
     const navigate = useNavigate();
 
@@ -32,20 +30,16 @@ const Gameboard = (props) => {
 
     useEffect(() => {
         getSessionInfo();
-        console.log(socket)
-        if (socket == null) {
-            setSocket(io(process.env.REACT_APP_SOCKET))
-        }
-        if (socket !== null) {
-            socket.emit('joinRoom', gameId);
-            socket.on("updateSession", (turn, row, column) => {
+        if (props.socket !== null) {
+            props.socket.emit('joinRoom', gameId);
+            props.socket.on("updateSession", (turn, row, column) => {
                 updateArray(row, column, turn);
                 getSessionInfo();
             })
-            socket.on("message", (message) => {
+            props.socket.on("message", (message) => {
                 console.log(message)
             })
-            socket.on("playerInfo", (playerNum) => {
+            props.socket.on("playerInfo", (playerNum) => {
                 setPlayerNum(playerNum)
                 if (playerNum === 2) {
                     props.setRole("Black")
@@ -57,14 +51,18 @@ const Gameboard = (props) => {
                     props.setRole("Spectating")
                 }
             })
-            return () => {
-                if (socket && socket.connected) {
-                    console.log("Disconnected");
-                    socket.disconnect();
-                }
-            };
+            window.addEventListener('popstate', () => {
+                handlePopState();
+            })
         }
-    }, [gameId, socket]);
+    }, [gameId, props.socket]);
+
+    function handlePopState() {
+        props.socket.emit('leaveRoom', gameId);
+        window.removeEventListener('popstate', handlePopState);
+    }
+      
+
 
     async function getSessionInfo() {
         console.log("Fetching game info");
@@ -106,7 +104,7 @@ const Gameboard = (props) => {
 
     async function handleTileClick(row, column) {
         if (turn === playerNum) {
-            socket.emit("move", gameId, turn, row, column);
+            props.socket.emit("move", gameId, turn, row, column);
         }
     }
 

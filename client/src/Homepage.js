@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useState, useRef} from 'react';
 import { useNavigate } from 'react-router-dom'
 import anime from "animejs/lib/anime.es.js";
 import icon from "./assets/reversi_icon.svg"
+import Matchmake from './components/Matchmake';
 import "./styles/homepage.css";
 
-const Homepage = () => {
+const Homepage = (props) => {
     const [columns, setColumns] = useState(0);
     const [rows, setRows] = useState(0);
     const [toggled, setToggled] = useState(false);
@@ -14,6 +15,7 @@ const Homepage = () => {
     const [inputValue, setInputValue] = useState('');
     const [findGameAlert, setfindGameAlert] = useState('nameInput')
     const [alertMsg, setAlert] = useState("");
+    const [inQueue, setInQueue] = useState(false);
 
 
     function makeid(length) {
@@ -100,7 +102,7 @@ const Homepage = () => {
             if (result.status === 200) {
                 setTimeout(() => {
                     navigate('/' + gameId);
-                  }, 500);
+                }, 500);
             }
             else if (result.status === 500) { // Game exists we will try with a different id
                 console.log("Game already exists navigating to the current game");
@@ -164,17 +166,58 @@ const Homepage = () => {
         }
     }
 
+    function matchmake() {
+        setToggled(!toggled);
+        setInQueue(true);
+        anime({
+            targets: ".tile",
+            opacity: 1,
+            delay: anime.stagger(50, {
+                grid: [columns, rows],
+                from: (columns * rows) / 2
+            })
+        });
+        props.socket.emit("joinQueue");
+        props.socket.on("leaveQueue", () => {
+        props.socket.emit('leaveQueue');
+        });
+        props.socket.on("transfer", (gameId) => {
+            setTimeout(() => {
+                navigate('/' + gameId);
+            }, 500);
+        })
+    }
+
+    function cancelMatchmake() {
+        props.socket.off("leaveQueue");
+        setToggled(!toggled);
+        setInQueue(false);
+        anime({
+            targets: ".tile",
+            opacity: 0,
+            delay: anime.stagger(50, {
+                grid: [columns, rows],
+                from: (columns * rows) / 2
+            })
+        });
+        props.socket.emit("leaveQueue");
+    }
+
     const handleInputChange = (e) => {
         setInputValue(e.target.value);
       };
 
     return (
         <div id="homepage" className="wrapper">
+            {inQueue && (
+                <Matchmake cancelMatchmake={cancelMatchmake}/>
+            )}
             {toggled && (
             <>
                 <img className="logo" src={icon} alt="logo"></img> 
                 {mode == null && (
                 <div className='mode'>
+                    <button className='createGame' id="matchmake" onClick={() => {matchmake();}}>Matchmake</button>
                     <button type="submit" className="createGame" onClick={(event) => { 
                         setMode(1);
                         modeRef.current = 1;
