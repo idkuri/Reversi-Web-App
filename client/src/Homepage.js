@@ -167,6 +167,7 @@ const Homepage = (props) => {
     }
 
     function matchmake() {
+        window.addEventListener("popstate", cancelMatchmake)
         setToggled(!toggled);
         setInQueue(true);
         anime({
@@ -188,9 +189,9 @@ const Homepage = (props) => {
         })
     }
 
-    function cancelMatchmake() {
+    function cancelMatchmake() {        
         props.socket.off("leaveQueue");
-        setToggled(!toggled);
+        setToggled(true);
         setInQueue(false);
         anime({
             targets: ".tile",
@@ -201,6 +202,7 @@ const Homepage = (props) => {
             })
         });
         props.socket.emit("leaveQueue");
+        window.removeEventListener("popstate", cancelMatchmake)
     }
 
     const handleInputChange = (e) => {
@@ -217,7 +219,8 @@ const Homepage = (props) => {
                 <img className="logo" src={icon} alt="logo"></img> 
                 {mode == null && (
                 <div className='mode'>
-                    <button className='createGame' id="matchmake" onClick={() => {matchmake();}}>Matchmake</button>
+                    <button className='createGame' id="matchmake" onClick={() => {
+                        matchmake();}}>Matchmake</button>
                     <button type="submit" className="createGame" onClick={(event) => { 
                         setMode(1);
                         modeRef.current = 1;

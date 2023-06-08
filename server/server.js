@@ -101,7 +101,7 @@ async function joinRoom(room, player) {
     console.log(`Room ${room} Player: ${player} joined`)
     let sessionState = await sessionInfo.find({ gameId: room});
     if (sessionState.length == 0) {
-        res.status(404).json({error: "Game not found"})
+        console.log(`Room: ${room} was not found!`)
         return
     }
     else {
@@ -203,7 +203,7 @@ async function deleteRoom(room) {
 }
 
 io.on('connection', socket => {
-  console.log(`${socket.id} connected!`)
+  // console.log(`${socket.id} connected!`)
 
   // console.log(io.allSockets());
   socket.on('joinQueue', async () => {
@@ -255,7 +255,7 @@ io.on('connection', socket => {
     })
 
     // Listen for room leaves
-    socket.on('leaveRoom', async () => {
+    socket.once('leaveRoom', async () => {
       await leaveRoom(room, me[0], socket.id)
       await socket.leave(room);
       if (io.sockets.adapter.rooms.get(room) === undefined) {
