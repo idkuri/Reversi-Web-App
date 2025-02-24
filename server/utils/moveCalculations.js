@@ -1,4 +1,12 @@
 // Calculates the new state of the game given the current state and the move
+/**
+ * Calculates the new state of the board after a move is made by a player.
+ *
+ * @param {Array<Array<number>>} state - The current state of the board represented as a 2D array.
+ * @param {number} player - The player making the move (1 for one player, -1 for the other).
+ * @param {Array<number>} move - The move to be made, represented as an array with two elements [row, column].
+ * @returns {Array<Array<number>>} - The new state of the board after the move has been made and pieces have been flipped.
+ */
 function calculate(state, player, move) {
 
   // Conditions need to be met: 
@@ -24,6 +32,14 @@ function calculate(state, player, move) {
   return array;
 }
 
+/**
+ * Searches horizontally in the game state to find the start and end positions of the player's pieces.
+ *
+ * @param {Array<Array<number>>} state - The current state of the board represented as a 2D array.
+ * @param {number} player - The player making the move (1 for one player, -1 for the other).
+ * @param {Array<number>} move - The move to be made, represented as an array with two elements [row, column].
+ * @returns {Array<number>} - An array containing the start and end positions of the player's pieces in the row.
+ */
 function searchHorizontal(state, player, move) {
   let start = move[1]
   let end = move[1]
@@ -57,6 +73,14 @@ function searchHorizontal(state, player, move) {
   return [start, end]
 }
 
+/**
+ * Searches vertically in the game state to find the start and end positions of the player's pieces.
+ *
+ * @param {Array<Array<number>>} state - The current state of the board represented as a 2D array.
+ * @param {number} player - The player making the move (1 for one player, -1 for the other).
+ * @param {Array<number>} move - The move to be made, represented as an array with two elements [row, column].
+ * @returns {Array<number>} - An array containing the start and end positions of the player's pieces in the column.
+ */
 function searchVertical(state, player, move) {
   let start = move[0]
   let end = move[0]
@@ -87,6 +111,14 @@ function searchVertical(state, player, move) {
   return [start, end]
 }
 
+/**
+ * Searches diagonally in the game state to find the start and end positions of the player's pieces.
+ *
+ * @param {number[][]} state - The current state of the game board, represented as a 2D array.
+ * @param {number} player - The player number (e.g., 1 or 2) whose pieces are being searched for.
+ * @param {number[]} move - The position of the move being made, represented as a 2-element array [row, column].
+ * @returns {Array<Array<number[]>>} - An array containing two arrays, each with two elements representing the start and end positions of the player's pieces in the down-right and top-right diagonals.
+ */
 function searchDiagonal(state, player, move) {
   // DR short hand for down right
   // TR short hand for top right
@@ -150,6 +182,16 @@ function searchDiagonal(state, player, move) {
   return [[DRstart, DRend], [TRstart, TRend]]
 }
 
+/**
+ * Flips the pieces horizontally on the board for a given player.
+ *
+ * @param {Array<Array<number>>} state - The current state of the board.
+ * @param {number} player - The player making the move.
+ * @param {number} row - The row in which the pieces will be flipped.
+ * @param {number} start - The starting column index for flipping.
+ * @param {number} end - The ending column index for flipping.
+ * @returns {Array<Array<number>>} The updated state of the board after flipping the pieces.
+ */
 function flipHorizontal(state, player, row, start, end) {
   let array = state
   for (let i = start; i <= end; i++ ) {
@@ -158,6 +200,16 @@ function flipHorizontal(state, player, row, start, end) {
   return array;
 }
 
+/**
+ * Flips the pieces vertically in a Reversi game board state.
+ *
+ * @param {Array<Array<number>>} state - The current game board state.
+ * @param {number} player - The player number (e.g., 1 or 2) to set the pieces to.
+ * @param {number} column - The column index where the flipping occurs.
+ * @param {number} start - The starting row index for the flip.
+ * @param {number} end - The ending row index for the flip.
+ * @returns {Array<Array<number>>} The updated game board state after flipping the pieces.
+ */
 function flipVertical(state, player, column, start, end) {
   let array = state
   for (let i = start; i <= end; i++ ) {
@@ -166,6 +218,15 @@ function flipVertical(state, player, column, start, end) {
   return array;
 }
 
+/**
+ * Flips the pieces diagonally on the board for a given player.
+ *
+ * @param {Array<Array<number>>} state - The current state of the board.
+ * @param {number} player - The player number (e.g., 1 or 2) whose pieces will be placed.
+ * @param {Array<Array<number>>} DR - The starting and ending coordinates for the downward-right diagonal flip.
+ * @param {Array<Array<number>>} TR - The starting and ending coordinates for the top-right diagonal flip.
+ * @returns {Array<Array<number>>} The updated state of the board after flipping the pieces.
+ */
 function flipDiagonal(state, player, DR, TR) {
   const DRstart = DR[0]
   const DRend = DR[1]
@@ -183,6 +244,14 @@ function flipDiagonal(state, player, DR, TR) {
 }
 
 
+/**
+ * Determines the valid moves for a player in the current game state.
+ *
+ * @param {number[][]} state - The current state of the game board, represented as a 2D array.
+ *                             Each cell contains 0 for an empty cell, 1 for player 1's piece, and 2 for player 2's piece.
+ * @param {number} player - The player for whom to calculate valid moves (1 or 2).
+ * @returns {number[][]} An array of valid moves, where each move is represented as a [row, col] pair.
+ */
 function getValidMoves(state, player) {
   const validMoves = [];
   
@@ -197,6 +266,14 @@ function getValidMoves(state, player) {
   return validMoves;
 }
 
+/**
+ * Checks the validity of a move in the Reversi game.
+ *
+ * @param {Array<Array<number>>} state - The current state of the game board.
+ * @param {number} player - The player making the move (1 or 2).
+ * @param {Array<number>} move - The move to be checked, represented as [row, column].
+ * @returns {boolean} - Returns true if the move is valid and results in at least one flip, otherwise false.
+ */
 function checkValidity(state, player, move) {
     const hResult = searchHorizontal(state, player, move)
     const vResult = searchVertical(state, player, move)

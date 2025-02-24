@@ -7,7 +7,12 @@ const apiKeyAuth = require('../utils/apiKeyAuth')
 // Code starts here
 const router = express.Router();
 
-// Get all sessions
+/**
+ * Get all sessions.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 router.get("/", async (req, res) => {
     try {
         const sessions = await sessionInfo.find();
@@ -18,7 +23,12 @@ router.get("/", async (req, res) => {
     }
 });
 
-// Find session by sessionID
+/**
+ * Find session by session ID.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 router.get("/:sessionId", apiKeyAuth , async (req, res) => {
     console.log(`Fetching sessionId: ${req.params.sessionId}`);
     try {
@@ -37,8 +47,12 @@ router.get("/:sessionId", apiKeyAuth , async (req, res) => {
     }
 });
 
-
-// Create new session
+/**
+ * Create a new session.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 router.post("/", apiKeyAuth, async (req, res) => {
     console.log("Creating session");
     const sessions = await sessionInfo.find({ gameId: req.body.gameId});

@@ -10,7 +10,7 @@ const { checkValidity, calculate, getValidMoves } = require('./utils/moveCalcula
 const { Mutex } = require('async-mutex');
 
 const http = require('http');
-const https = require('https');
+// const https = require('https');
 
 require('dotenv').config();
 
@@ -32,15 +32,15 @@ app.use( express.json() )
 app.use("/sessions", sessions)
 
 // Certificate
-const privateKey = fs.readFileSync(process.env.CERTPRIV, 'utf8');
-const certificate = fs.readFileSync(process.env.CERT, 'utf8');
-const ca = fs.readFileSync(process.env.CA, 'utf8');
+// const privateKey = fs.readFileSync(process.env.CERTPRIV, 'utf8');
+// const certificate = fs.readFileSync(process.env.CERT, 'utf8');
+// const ca = fs.readFileSync(process.env.CA, 'utf8');
 
-const credentials = {
-	key: privateKey,
-	cert: certificate,
-	ca: ca
-};
+// const credentials = {
+// 	key: privateKey,
+// 	cert: certificate,
+// 	ca: ca
+// };
 
 // Connecting to the database
 mongoose.connect(uri, {
@@ -56,6 +56,9 @@ mongoose.connect(uri, {
   process.exit(1);
 })
 
+/**
+ * Deletes all rooms from the database.
+ */
 async function deleteAllRooms() {
   try {
     const status = await mongoose.connection.db.dropCollection('sessions')
@@ -70,11 +73,11 @@ async function deleteAllRooms() {
 }
 
 const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
+// const httpsServer = https.createServer(credentials, app);
 
 const { instrument } = require('@socket.io/admin-ui');
 
-const io = require("socket.io")(httpsServer, {
+const io = require("socket.io")(httpServer, {
   cors: {
     origin: ["http://localhost:3000", "http://localhost:3001", "https://admin.socket.io", "https://reversiproject.netlify.app"],
     credentials: true
@@ -90,10 +93,17 @@ httpServer.listen(80, () => {
   console.log(`Listening to this port: 80`)
 }) 
 
-httpsServer.listen(443, () => {
-	console.log('HTTPS Server running on port 443');
-});
+// httpsServer.listen(443, () => {
+// 	console.log('HTTPS Server running on port 443');
+// });
 
+/**
+ * Joins a player to a room.
+ *
+ * @param {string} room - The room ID.
+ * @param {string} player - The player ID.
+ * @returns {Array} - An array containing the player number and player information.
+ */
 async function joinRoom(room, player) {
   // Mutex lock to ensure one thread runs this function at a time
   const release = await mutex.acquire();
@@ -130,6 +140,12 @@ async function joinRoom(room, player) {
 } 
 
 
+/**
+ * Generates a random ID of the specified length.
+ *
+ * @param {number} length - The length of the ID to generate.
+ * @returns {string} - The generated ID.
+ */
 function makeid(length) {
   let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -142,6 +158,12 @@ function makeid(length) {
   return result;
 }
 
+/**
+ * Creates a new room.
+ *
+ * @param {string} room - The room ID.
+ * @returns {number} - The status code indicating the result of the operation.
+ */
 async function createRoom(room) {
   console.log("Creating session: " + room);
   const sessions = await sessionInfo.find({ gameId: room});
@@ -164,7 +186,14 @@ async function createRoom(room) {
   }
 }
 
-
+/**
+ * Removes a player from a room.
+ *
+ * @param {string} room - The room ID.
+ * @param {number} number - The player number (1 or 2).
+ * @param {string} player - The player ID.
+ * @returns {number} - The status code indicating the result of the operation.
+ */
 async function leaveRoom(room, number, player) {
   console.log(`Room ${room} Player: ${player} left`)
   let sessionState = await sessionInfo.find({ gameId: room});
@@ -187,6 +216,12 @@ async function leaveRoom(room, number, player) {
   }
 }
 
+/**
+ * Deletes a room from the database.
+ *
+ * @param {string} room - The room ID.
+ * @returns {number} - The status code indicating the result of the operation.
+ */
 async function deleteRoom(room) {
     try {
         const removeStatus = await sessionInfo.deleteOne({gameId: room});
@@ -305,6 +340,15 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+/**
+ * Handles a move in the game.
+ *
+ * @param {string} room - The room ID.
+ * @param {number} current - The current player number.
+ * @param {number} row - The row index of the move.
+ * @param {number} column - The column index of the move.
+ * @returns {Object} - An object containing the status code indicating the result of the operation.
+ */
 async function move(room, current, row, column) {
     try {
       // Get move from body
