@@ -36,7 +36,6 @@ Replace A_KEY_GENERATED_KEY_FOR_apikeyAuth.js with a generated key to be used by
 
 Then, start the server:
 
-node server.js
 ```bash
 node server.js
 ```
