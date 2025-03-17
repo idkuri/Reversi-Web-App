@@ -8,9 +8,17 @@ const fs = require('fs');
 const sessionInfo = require("./models/sessionInfo");
 const { checkValidity, calculate, getValidMoves } = require('./utils/moveCalculations.js');
 const { Mutex } = require('async-mutex');
+const rateLimit = require('express-rate-limit');
 
 const http = require('http');
 // const https = require('https');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Too many requests. Please try again later.",
+  headers: true,
+});
 
 require('dotenv').config();
 
@@ -23,6 +31,8 @@ const uri = process.env.URI;
 const corsOptions = {
   origin: ['http://localhost:80', 'https://localhost:443', 'http://localhost:3000', 'http://localhost:3001', 'https://reversiproject.netlify.app']
 };
+
+app.use(limiter);
 
 //Enable CORS
 app.use(cors(corsOptions));
