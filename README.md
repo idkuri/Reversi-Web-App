@@ -20,7 +20,22 @@ To run the server, navigate to the server directory and use the following comman
 ```bash
 npm install
 ```
-then,
+## Environment Variables
+
+Create a .env file in the server directory and add the following:
+
+```bash
+URI=your_mongodb_connection_string
+```
+
+Replace your_mongodb_connection_string with your actual MongoDB connection URI.
+```bash
+CHECKAPI=A_KEY_GENERATED_KEY_FOR_apikeyAuth.js
+```
+Replace A_KEY_GENERATED_KEY_FOR_apikeyAuth.js with a generated key to be used by the frontend to update player moves within the server.
+
+Then, start the server:
+
 ```bash
 node server.js
 ```
